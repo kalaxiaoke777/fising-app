@@ -1,16 +1,69 @@
 {
-	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
-		{
-			"path": "pages/index/index",
-			"style": {
-				"navigationBarTitleText": "uni-app"
-			}
+	"pages": [
+	  //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+	  {
+		"path": "pages/fishingMap/fishingMap",
+		"style": {
+		  "navigationBarTitleText": "垂钓地图"
 		}
+	  },
+	  {
+		"path": "pages/fishingSpot/fishingSpot",
+		"style": {
+		  "navigationBarTitleText": "鱼场"
+		}
+	  },
+	  {
+		"path": "pages/aiFishing/aiFishing",
+		"style": {
+		  "navigationBarTitleText": "AI Fishing"
+		}
+	  },
+	  {
+		"path": "pages/my/my",
+		"style": {
+		  "navigationBarTitleText": "我的"
+		}
+	  }
 	],
 	"globalStyle": {
-		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
+	  "navigationBarTextStyle": "black",
+	  "navigationBarTitleText": "",
+	  "navigationBarBackgroundColor": "#F8F8F8",
+	  "backgroundColor": "#F8F8F8"
+	},
+	// 设置 TabBar
+	"tabBar": {
+	  "color": "#333",
+	  "selectedColor": "#27ba9b",
+	  "backgroundColor": "#fff",
+	  "borderStyle": "white",
+	  "list": [
+		{
+		  "text": "首页",
+		  "pagePath": "pages/fishingMap/fishingMap",
+		  "iconPath": "static/tabs/home_default.png",
+		  "selectedIconPath": "static/tabs/home_selected.png"
+		},
+		{
+		  "text": "分类",
+		  "pagePath": "pages/fishingSpot/fishingSpot",
+		  "iconPath": "static/tabs/category_default.png",
+		  "selectedIconPath": "static/tabs/category_selected.png"
+		},
+		{
+		  "text": "购物车",
+		  "pagePath": "pages/aiFishing/aiFishing",
+		  "iconPath": "static/tabs/cart_default.png",
+		  "selectedIconPath": "static/tabs/cart_selected.png"
+		},
+		{
+		  "text": "我的",
+		  "pagePath": "pages/my/my",
+		  "iconPath": "static/tabs/user_default.png",
+		  "selectedIconPath": "static/tabs/user_selected.png"
+		}
+	  ]
 	}
-}
+  }
+  
