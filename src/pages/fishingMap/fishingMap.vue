@@ -3,6 +3,9 @@
     <view class="page-body">
       <view class="page-section page-section-gap">
         <map
+          enable-3D = "true"
+          :enable-overlooking = "true"
+          :enable-traffic = "traffic"
           @tap="handleMapTap"
           style="width: 100%; height: 100vh"
           :latitude="coordinates[1]"
@@ -12,13 +15,21 @@
       </view>
     </view>
   </view>
-  <search />
+  <searchPoint />
+  <addPoint />
+  <Tools :toggleTraffic="toggleTraffic"/>
 </template>
 
 <script lang="ts" setup>
-import search from "@/components/search/index.vue";
+import addPoint from "@/components/addPoint/index.vue";
+import searchPoint from "@/components/search/index.vue";
+import Tools from "@/components/tools/index.vue";
 import { ref } from "vue";
-const coordinates = ref([104, 30]);
+const coordinates = ref([104.0668, 30.5728]);
+const traffic = ref(false);
+const toggleTraffic = () => {
+  traffic.value = !traffic.value;
+}
 const handleMapTap = (e: any) => {
   console.log(e);
 };
@@ -26,4 +37,3 @@ const handleMapTap = (e: any) => {
 
 <style lang="scss" scoped>
 </style>
-netstat -an | find "10025"
