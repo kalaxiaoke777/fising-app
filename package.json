@@ -1,10 +1,10 @@
 {
   "easycom": {
-		"autoscan": true,
-		"custom": {
-			"^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue"
-		}
-	},
+    "autoscan": true,
+    "custom": {
+      "^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue"
+    }
+  },
   "name": "uni-preset-vue",
   "version": "0.0.0",
   "scripts": {
@@ -59,6 +59,9 @@
     "@dcloudio/uni-mp-weixin": "3.0.0-3081220230817001",
     "@dcloudio/uni-quickapp-webview": "3.0.0-3081220230817001",
     "@dcloudio/uni-ui": "^1.5.2",
+    "pinia": "^2.0.33",
+    "pinia-plugin-persist": "^1.0.0",
+    "pinia-plugin-persistedstate": "^3.2.1",
     "vue": "^3.2.45",
     "vue-i18n": "^9.1.9"
   },

@@ -51,6 +51,7 @@
     /* 小程序特有相关 */
     "mp-weixin": {
         "appid": "wx63957ce7fc8134f1",
+        "tmap_key": "I7RBZ-RV66Q-34H5G-BE2RK-IFUW7-DJBDR",
         "setting": {
             "urlCheck": false
         },

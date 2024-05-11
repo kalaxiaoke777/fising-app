@@ -1,7 +1,9 @@
 <template>
     <view class="tools">
-        <image src="@/static/fishing/路况.png" class="toolImage" @click="changeIsShow" :data-message="{message:'实时路况',type:'isTraffic',func:'toggleTraffic'}"></image>
-        <image src="@/static/fishing/卫星地图.png" :style="{width:'32px',height:'32px'}" @click="changeIsShow" :data-message="{message:'卫星地图',type:'isEnableSatellite',func:'toggleEnableSatellite'}"></image>
+        <image src="@/static/fishing/路况.png" class="toolImage" @click="changeIsShow" :data-message="{message:'实时路况',type:'isTraffic',func:'toggleTraffic'}">
+        </image>
+        <image src="@/static/fishing/卫星地图.png" :style="{width:'32px',height:'32px'}" @click="changeIsShow" :data-message="{message:'卫星地图',type:'isEnableSatellite',func:'toggleEnableSatellite'}">
+        </image>
     </view>
 </template>
 
@@ -20,12 +22,11 @@ const props = defineProps({
     required: true
   }
 });
-const changeIsShow = (event: any)=>{  
+const changeIsShow = (event: any)=>{ 
     const message = event.currentTarget.dataset.message.message
     const type = event.currentTarget.dataset.message.type
     const func = event.currentTarget.dataset.message.func
     const funct = props.func[func]
-    console.log(funct,func);
     
     funct && funct();
     uni.showToast({
