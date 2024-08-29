@@ -9,7 +9,10 @@
 		{
 			"path": "pages/fishingSpot/fishingSpot",
 			"style": {
-				"navigationBarTitleText": "鱼场"
+				"navigationBarTitleText": "鱼场",
+				"usingComponents": {
+					"van-button": "/wxcomponents/vant-weapp/dist/button/index"
+				}
 			}
 		},
 		{
