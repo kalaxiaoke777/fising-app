@@ -10,4 +10,6 @@ onHide(() => {
   console.log("App Hide");
 });
 </script>
-<style></style>
+<style>
+  @import './wxcomponents/vant-weapp/dist/common/index.wxss';
+</style>

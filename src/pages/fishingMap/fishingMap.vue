@@ -111,7 +111,6 @@ const data = ref({
 })
 
 onBeforeMount(()=>{
-  console.log("onLoadsf");
   cityStore.setCityName("成都")
   console.log(cityStore.cityName);
   
