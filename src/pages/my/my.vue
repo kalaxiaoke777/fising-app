@@ -14,7 +14,7 @@
                     设置
                     <img src="@/static/my/设置.png" class="iimg">
                 </view>
-                <button class="btn">退出登录</button>
+                <button class="btn" @click="handleLogin">登录</button>
             </view>
         </view>
     </view>
@@ -23,25 +23,49 @@
 <script lang="ts" setup>
 import { onMounted } from 'vue';
 
+const handleLogin = ()=>{
+    // 跳转到授权登录页面
+    uni.navigateTo({
+        url: '/pages/login/login'
+    });
+}
 onMounted(() => {    
+    // 首先登录微信
     uni.login({
         provider: 'weixin',
-        success: res => {
-            console.log('登录成功，code：', res.code);
-            // 此处可以将 code 发送到后台进行登录或注册操作
+        success: function (loginRes) {
+            if (loginRes.code) {
+                console.log('登录凭证:', loginRes.code);
+                // 登录成功后检查授权状态
+                uni.getSetting({
+                    success: function (settingRes) {
+                        if (settingRes.authSetting['scope.userInfo']) {
+                            // 用户已经授权，获取用户信息
+                            uni.getUserInfo({
+                                provider: 'weixin',
+                                success: function (infoRes) {
+                                    console.log('用户信息:', infoRes.userInfo);
+                                    // infoRes.userInfo 可能包括 nickname、avatarUrl、gender、province 等
+                                },
+                                fail: function (infoErr) {
+                                    console.error('获取用户信息失败:', infoErr);
+                                }
+                            });
+                        } else {
+                            console.log('用户未授权，请引导用户进行授权');
+                            // 在这里可以提示用户进行授权
+                        }
+                    },
+                    fail: function (settingErr) {
+                        console.error('获取设置失败:', settingErr);
+                    }
+                });
+            } else {
+                console.error('登录失败:', loginRes.errMsg);
+            }
         },
-        fail: err => {
-            console.error('登录失败：', err);
-        }
-    });
-    uni.getUserInfo({
-        provider: 'weixin',
-        success: res => {
-            console.log('用户信息：', res);
-            // 此处可以将用户信息发送到后台进行注册或登录操作
-        },
-        fail: err => {
-            console.error('获取用户信息失败：', err);
+        fail: function (loginErr) {
+            console.error('登录失败:', loginErr);
         }
     });
 })

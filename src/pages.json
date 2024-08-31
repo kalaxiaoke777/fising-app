@@ -26,13 +26,25 @@
 			"style": {
 				"navigationBarTitleText": "我的"
 			}
+		},
+		{
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "登录",
+				"usingComponents": {
+					"van-button": "/wxcomponents/vant-weapp/dist/button/index",
+				}
+			}
 		}
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "",
 		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
+		"backgroundColor": "#F8F8F8",
+		"usingComponents": {
+			"van-checkbox": "./wxcomponents/vant-weapp/dist/checkbox/index"
+		}
 	},
 	// 设置 TabBar
 	"tabBar": {

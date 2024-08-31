@@ -5,4 +5,4 @@ const pinia: any = createPinia();
 pinia.use(persist);
 
 export default pinia
-export * from './modules/city';
+export * from './modules';
