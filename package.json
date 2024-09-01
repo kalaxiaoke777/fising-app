@@ -62,6 +62,7 @@
     "@dcloudio/uni-quickapp-webview": "3.0.0-4020420240722002",
     "@dcloudio/uni-ui": "^1.5.2",
     "@dcloudio/uvm": "latest",
+    "axios": "^1.7.7",
     "pinia": "^2.0.33",
     "pinia-plugin-persist": "^1.0.0",
     "pinia-plugin-persistedstate": "^3.2.1",

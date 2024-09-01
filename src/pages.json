@@ -30,10 +30,13 @@
 		{
 			"path": "pages/login/login",
 			"style": {
-				"navigationBarTitleText": "登录",
-				"usingComponents": {
-					"van-button": "/wxcomponents/vant-weapp/dist/button/index",
-				}
+				"navigationBarTitleText": "登录"
+			}
+		},
+		{
+			"path": "pages/login/register",
+			"style": {
+				"navigationBarTitleText": "注册"
 			}
 		}
 	],
@@ -43,7 +46,9 @@
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8",
 		"usingComponents": {
-			"van-checkbox": "./wxcomponents/vant-weapp/dist/checkbox/index"
+			"van-button": "/wxcomponents/vant-weapp/dist/button/index",
+			"van-checkbox": "/wxcomponents/vant-weapp/dist/checkbox/index",
+			"van-field": "/wxcomponents/vant-weapp/dist/field/index"
 		}
 	},
 	// 设置 TabBar

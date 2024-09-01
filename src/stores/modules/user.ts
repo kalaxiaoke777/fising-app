@@ -3,20 +3,15 @@ import { ref } from "vue";
 
 export const useUserStore = defineStore('user', {
     state: () => ({
-        access_token: undefined as string | undefined,
-        openid: undefined as string | undefined,
-        UniCloud: undefined as string | undefined,
+        token: undefined as string | undefined,
+
     }),
     actions: {
-        setCityName(access_token: string,openid: string,UniCloud: string) {
-            this.access_token = access_token;
-            this.openid = openid;
-            this.UniCloud = UniCloud;
+        setCityName(token: string) {
+            this.token = token;
         },
         clearCityName() {
-            this.access_token = undefined;
-            this.openid = undefined;
-            this.UniCloud = undefined;
+            this.token = undefined;
         },
     },
     persist: {
