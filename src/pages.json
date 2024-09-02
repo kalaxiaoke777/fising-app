@@ -38,6 +38,12 @@
 			"style": {
 				"navigationBarTitleText": "注册"
 			}
+		},
+		{
+			"path": "pages/fish/addFish",
+			"style": {
+				"navigationBarTitleText": "添加标点"
+			}
 		}
 	],
 	"globalStyle": {

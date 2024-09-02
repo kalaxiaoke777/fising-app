@@ -1,10 +1,16 @@
 <template>
   <view>
-    <img src="@/static/fishing/添加.png" class="addPoint" />
+    <img @click="handlelAdd" src="@/static/fishing/添加.png" class="addPoint" />
   </view>
 </template>
 
 <script lang="ts" setup>
+const handlelAdd = () => {
+  
+  uni.navigateTo({
+    url: '/pages/fish/addFish'
+  })
+}
 </script>
 
 <style lang="scss" scoped>
