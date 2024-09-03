@@ -1,15 +1,61 @@
 <template>
 	<view class="addFish">
-		<form @submit="formSubmit" @reset="formReset" class="c-register">
-            
-			<view class="uni-form-item uni-column">
-				<view class="title">添加标点</view>
-				<input class="uni-input" name="user" placeholder="请输入用户名" />
+		<form @submit="formSubmit" @reset="formReset" class="myForm">
+			<view class="title">添加标点</view>
+
+			<view class="uni-form-item uni-column myItem">
+				<view>鱼塘名称</view>
+				<input class="uni-input" name="name" placeholder="请输入用户名" />
 			</view>
-            
+
+			<view class="uni-form-item uni-column myItem">
+				<view>价格</view>
+				<input class="uni-input" name="price" placeholder="请输入鱼塘价格" />
+			</view>
+
+			<view class="uni-form-item uni-column myItem">
+				<view class="title">鱼塘类型</view>
+				<radio-group name="radio">
+					<label>
+						<radio value="natural" /><text>自然</text>
+						<radio value="wild" /><text>野塘</text>
+
+					</label>
+					<label>
+						<radio value="happy" /><text>欢乐</text>
+						<radio value="black_pit" /><text>黑坑</text>
+					</label>
+				</radio-group>
+			</view>
+			<view class="uni-form-item uni-column myItem">
+				<view>联系方式</view>
+				<input class="uni-input" name="number" placeholder="请输入号码" />
+			</view>
 			<view class="uni-form-item uni-column">
-                <view>手机号</view>
-				<input class="uni-input" name="number" placeholder="请输入手机号码" />
+				<view>评价</view>
+				<slider :min=0 :max=5 name="slider" show-value></slider>
+			</view>
+			<view class="uni-list">
+				<view class="uni-list-cell">
+
+					<view class="uni-list-cell-db timeItem">
+						<view class="uni-list-cell-left">
+							开业时间
+						</view>
+						<picker mode="time" :value="state.startTime" @change="bindStartTimeChange">
+							<view class="uni-input">{{ state.startTime }}</view>
+						</picker>
+					</view>
+
+					<view class="uni-list-cell-db timeItem">
+						<view class="uni-list-cell-left">
+							结束时间
+						</view>
+						<picker mode="time" :value="state.endTime" @change="bindEndTimeChange">
+							<view class="uni-input">{{ state.endTime }}</view>
+						</picker>
+					</view>
+				</view>
 			</view>
 
 			<view class="uni-btn-v">
@@ -25,16 +71,22 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, reactive } from 'vue';
 import ApiService from "../../utils/request";
 import config from "../../../config"
 import { useRegisterStore } from '../../stores/index';
+import store from '../../hooks/addFishHook';
+const { state, updateUserName, updatePhoneNumber, updateStartTime, updateEndTime, bindStartTimeChange, bindEndTimeChange } = store;
 const registerStore = useRegisterStore();
-const userName = ref('')
-const phoneNumber = ref('')
 // 中国手机号码正则表达式
 const regexChina = /^1[3-9]\d{9}$/;
 
+// const bindStartTimeChange = (e: { detail: { value: string; }; }) => {
+// 	updateStartTime(e.detail.value)
+// }
+// const bindEndTimeChange = (e: { detail: { value: string; }; }) => {
+// 	updateEndTime(e.detail.value)
+// }
 const formSubmit = (v: any) => {
 	// 从事件对象中提取表单数据
 	const { number, user } = v.target.value;
@@ -95,8 +147,8 @@ const formSubmit = (v: any) => {
 		});
 }
 const formReset = () => {
-	phoneNumber.value = ''
-	userName.value = ''
+	updateStartTime('09:00')
+	updateEndTime('18:00')
 }
 onMounted(() => {
 
@@ -113,10 +165,8 @@ onMounted(() => {
 	align-items: center;
 	height: 100vh;
 	width: 100vw;
-    .uni-form-item{
-        
-    }
-	.c-register {
+
+	.myForm {
 		display: flex;
 		justify-content: center;
 		width: 80vw;
@@ -128,18 +178,18 @@ onMounted(() => {
 		text-align: center;
 		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
-		.uni-input {
-			width: 100%;
-			margin-bottom: 10px;
-			border-bottom: 1px solid rgba(255, 255, 255, 0.9)
+		.myItem {
+			display: flex;
+			flex-direction: row;
 		}
-
-		.title {
-			font-size: 20px;
-			margin-bottom: 10px;
-			margin-top: 10px;
-			font-weight: bold;
-			color: black;
+		.uni-list{
+			.timeItem{
+                display: flex;
+                flex-direction: row;
+				.uni-list-cell-left{
+					width: 50%;
+				}
+			}
 		}
 
 		.uni-btn-v {
