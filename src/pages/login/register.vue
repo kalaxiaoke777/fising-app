@@ -15,7 +15,7 @@
         </form>
     </view>
     <view class="img">
-        <img src="/static/login/fish.png" alt="Fish Image" style="width: 100%; height: 100%; object-fit: cover;" />
+        <img :src="image_url" alt="Fish Image" style="width: 100%; height: 100%; object-fit: cover;" />
     </view>
 
 </template>
@@ -25,6 +25,10 @@ import { onMounted, ref } from 'vue';
 import ApiService from "../../utils/request";
 import config from "../../../config"
 import { useRegisterStore } from '../../stores/index'; 
+
+
+const {weRegister, API_BASE_URL} = config
+const image_url = ref(`${API_BASE_URL}/static/fish.png`);
 const registerStore = useRegisterStore();
 const userName = ref('')
 const phoneNumber = ref('')
@@ -74,7 +78,7 @@ const formSubmit = (v: any) => {
         "openId": registerStore.openid,
         "userKey": registerStore.session_key
     }
-    ApiService.post(config.weRegister, data)
+    ApiService.post(weRegister, data)
         .then((response: any) => {
             if (response.code === 50001) {
                 // 不存在则直接弹出填入手机号进行注册

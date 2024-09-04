@@ -2,7 +2,7 @@
     <view>
         <view class="uni-flex uni-column">
             <view class="flex-item flex-item-V itop">
-                <cover-image class="auth_img" src="/static/my/deflateAvatar.png">
+                <cover-image class="auth_img" :src="image_url">
                 </cover-image>
             </view>
             <view class="flex-item flex-item-V icenter">
@@ -22,7 +22,9 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
-
+import config from '../../../config'
+const {API_BASE_URL} = config
+const image_url = ref(`${API_BASE_URL}/static/fish.png`);
 const isLogin = ref(false)
 const handleLogin = () => {
     // 跳转到授权登录页面
@@ -31,12 +33,23 @@ const handleLogin = () => {
     });
 }
 const getToken = () => {
-    const userToken = JSON.parse(uni.getStorageSync('user'))
-    console.log(userToken);
-    if (userToken.token) {
-        isLogin.value = false
+    // 获取存储的用户信息
+    const userStorage = uni.getStorageSync('user');
+    
+    // 处理存储项不存在或无法解析的情况
+    let userToken;
+    try {
+        userToken = JSON.parse(userStorage || '{}'); // 如果 userStorage 是 null 或 undefined，解析成空对象
+    } catch (e) {
+        console.error('Failed to parse user storage:', e);
+        userToken = {}; // 解析失败时也用空对象
+    }
+
+    // 检查 token 是否存在
+    if (userToken && userToken.token) {
+        isLogin.value = false; // 已登录
     } else {
-        isLogin.value = true
+        isLogin.value = true; // 未登录
     }
 }
 onMounted(() => {

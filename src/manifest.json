@@ -52,6 +52,7 @@
     "mp-weixin": {
         "appid": "wx63957ce7fc8134f1",
         "tmap_key": "I7RBZ-RV66Q-34H5G-BE2RK-IFUW7-DJBDR",
+        "lazyCodeLoading": "requiredComponents",
         "setting": {
             "urlCheck": false
         },

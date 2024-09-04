@@ -65,7 +65,7 @@
 		</form>
 	</view>
 	<view class="img">
-		<img src="/static/login/fish.png" alt="Fish Image" style="width: 100%; height: 100%; object-fit: cover;" />
+		<img :src="image_url" alt="Fish Image" style="width: 100%; height: 100%; object-fit: cover;" />
 	</view>
 
 </template>
@@ -73,20 +73,16 @@
 <script lang="ts" setup>
 import { onMounted, ref, reactive } from 'vue';
 import ApiService from "../../utils/request";
-import config from "../../../config"
+import config from "../../../config";
 import { useRegisterStore } from '../../stores/index';
-import store from '../../hooks/addFishHook';
-const { state, updateUserName, updatePhoneNumber, updateStartTime, updateEndTime, bindStartTimeChange, bindEndTimeChange } = store;
+import hooks from '../../hooks/addFishHook';
+const { state, updateUserName, updatePhoneNumber, updateStartTime, updateEndTime, bindStartTimeChange, bindEndTimeChange } = hooks;
 const registerStore = useRegisterStore();
 // 中国手机号码正则表达式
 const regexChina = /^1[3-9]\d{9}$/;
+const {API_BASE_URL,weRegister } = config
+const image_url = ref(`${API_BASE_URL}/static/fish.png`);
 
-// const bindStartTimeChange = (e: { detail: { value: string; }; }) => {
-// 	updateStartTime(e.detail.value)
-// }
-// const bindEndTimeChange = (e: { detail: { value: string; }; }) => {
-// 	updateEndTime(e.detail.value)
-// }
 const formSubmit = (v: any) => {
 	// 从事件对象中提取表单数据
 	const { number, user } = v.target.value;
@@ -130,7 +126,7 @@ const formSubmit = (v: any) => {
 		"openId": registerStore.openid,
 		"userKey": registerStore.session_key
 	}
-	ApiService.post(config.weRegister, data)
+	ApiService.post(weRegister, data)
 		.then((response: any) => {
 			if (response.code === 50001) {
 				// 不存在则直接弹出填入手机号进行注册

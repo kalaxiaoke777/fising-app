@@ -7,7 +7,7 @@
         </van-checkbox>
     </view>
     <view class="img">
-        <img src="/static/login/fish.png" alt="Fish Image" style="width: 100%; height: 100%; object-fit: cover;" />
+        <img :src="image_url" alt="Fish Image" style="width: 100%; height: 100%; object-fit: cover;" />
     </view>
 
 </template>
@@ -22,6 +22,8 @@ import { useUserStore } from '../../stores/index'; // 确保路径正确
 const userStore = useUserStore();
 const token = ref('');
 
+const {weCallback, API_BASE_URL} = config
+const image_url = ref(`${API_BASE_URL}/static/fish.png`);
 const updateToken = () => {
   userStore.setCityName(token.value);
 };
@@ -72,7 +74,7 @@ const handelRegister = () => {
             if (loginRes.code) {
                 console.log('登录凭证:', loginRes.code);
                 if (checked) {
-                    login(config.weCallback, loginRes.code)
+                    login(weCallback, loginRes.code)
                 }
 
                 // 登录成功后检查授权状态
