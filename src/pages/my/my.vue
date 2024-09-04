@@ -21,6 +21,8 @@
 </template>
 
 <script lang="ts" setup>
+import { onShow } from '@dcloudio/uni-app';
+import { onBeforeMount } from 'vue';
 import { onMounted, ref } from 'vue';
 import config from '../../../config'
 const {API_BASE_URL} = config
@@ -53,6 +55,8 @@ const getToken = () => {
     }
 }
 onMounted(() => {
+})
+onShow(() => {
     getToken()
 })
 </script>
