@@ -21,6 +21,8 @@
 </template>
 
 <script lang="ts" setup>
+import { onShow } from '@dcloudio/uni-app';
+import { onBeforeMount } from 'vue';
 import { onMounted, ref } from 'vue';
 
 const isLogin = ref(false)
@@ -31,15 +33,31 @@ const handleLogin = () => {
     });
 }
 const getToken = () => {
-    const userToken = JSON.parse(uni.getStorageSync('user'))
-    console.log(userToken);
-    if (userToken.token) {
-        isLogin.value = false
-    } else {
-        isLogin.value = true
-    }
+
+    uni.getStorageInfo({
+        success: function (res) {
+            const keys = res.keys;
+            const keyExists = keys.includes('user');
+            if (keyExists) {
+                const userToken = JSON.parse(uni.getStorageSync('user'))
+                if (userToken.token) {
+                    isLogin.value = false
+                } else {
+                    isLogin.value = true
+                }
+            } else {
+                isLogin.value = true
+            }
+        },
+        fail: function (error) {
+            isLogin.value = true
+        }
+    });
+
 }
 onMounted(() => {
+})
+onShow(() => {
     getToken()
 })
 </script>
