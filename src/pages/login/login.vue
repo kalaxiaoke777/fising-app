@@ -22,14 +22,14 @@ import { useUserStore } from '../../stores/index'; // 确保路径正确
 const userStore = useUserStore();
 const token = ref('');
 
-const {weCallback, API_BASE_URL} = config
+const { weCallback, API_BASE_URL } = config
 const image_url = ref(`${API_BASE_URL}/static/fish.png`);
 const updateToken = () => {
-  userStore.setCityName(token.value);
+    userStore.setUserName(token.value);
 };
 
 const clearToken = () => {
-  userStore.clearCityName();
+    userStore.clearUserName();
 };
 const registerStore = useRegisterStore();
 
@@ -42,7 +42,7 @@ const onChange: Function = () => {
 
     console.log(11, checked.value);
 }
-const login = (url: string, code:string) => {
+const login = (url: string, code: string) => {
     ApiService.get(url, { code: code })
         .then((response: any) => {
             if (response.code === 50001) {
@@ -67,6 +67,13 @@ const login = (url: string, code:string) => {
         });
 }
 const handelRegister = () => {
+    if (!checked.value) {
+        uni.showToast({
+            title: '请先勾选协议',
+            icon: 'none'
+        })
+        return
+    }
     // 首先登录微信
     uni.login({
         provider: 'weixin',

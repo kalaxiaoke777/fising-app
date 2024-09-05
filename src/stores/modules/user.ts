@@ -7,10 +7,10 @@ export const useUserStore = defineStore('user', {
 
     }),
     actions: {
-        setCityName(token: string) {
+        setUserName(token: string) {
             this.token = token;
         },
-        clearCityName() {
+        clearUserName() {
             this.token = undefined;
         },
     },
