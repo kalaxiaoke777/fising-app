@@ -1,54 +1,51 @@
 <template>
 	<view class="addFish">
 		<form @submit="formSubmit" @reset="formReset" class="myForm">
-			<view class="title">添加标点</view>
+			<view class="title" style="padding-top: 10px; text-align: center;">添加标点</view>
 
 			<view class="uni-form-item uni-column myItem">
-				<view>鱼塘名称</view>
+				<view class="myText">鱼塘名称:</view>
 				<input class="uni-input" name="name" placeholder="请输入用户名" />
 			</view>
 
 			<view class="uni-form-item uni-column myItem">
-				<view>价格</view>
+				<view class="myText">价格:</view>
 				<input class="uni-input" name="price" placeholder="请输入鱼塘价格" />
 			</view>
 
 			<view class="uni-form-item uni-column myItem">
-				<view class="title">鱼塘类型</view>
-				<radio-group name="radio">
+				<view class="title myText">鱼塘类型:</view>
+				<radio-group name="poundType">
 					<label>
-						<radio value="natural" /><text>自然</text>
-						<radio value="wild" /><text>野塘</text>
-
-					</label>
-					<label>
-						<radio value="happy" /><text>欢乐</text>
-						<radio value="black_pit" /><text>黑坑</text>
+						<radio value="natural" class="myRadio"/><text>自然</text>
+						<radio value="wild" class="myRadio"/><text>野塘</text>
+						<radio value="happy" class="myRadio"/><text>欢乐</text>
+						<radio value="black_pit" class="myRadio"/><text>黑坑</text>
 					</label>
 				</radio-group>
 			</view>
 			<view class="uni-form-item uni-column myItem">
-				<view>联系方式</view>
+				<view class="myText">联系方式:</view>
 				<input class="uni-input" name="number" placeholder="请输入号码" />
 			</view>
-			<view class="uni-form-item uni-column">
-				<view>评价</view>
-				<slider :min=0 :max=5 name="slider" show-value></slider>
+			<view class="uni-form-item uni-column " style="padding-top: 10px">
+				<view class="myText drz">评价</view>
+				<slider backgroundColor="#000000" block-color="#814d59" :block-size="20" class="mySlider" :min=0 :max=5 name="slider" show-value></slider>
 			</view>
 			<view class="uni-list">
 				<view class="uni-list-cell">
 
-					<view class="uni-list-cell-db timeItem">
-						<view class="uni-list-cell-left">
+					<view class="uni-list-cell-db timeItem myItem">
+						<view class="uni-list-cell-left drz" >
 							开业时间
 						</view>
-						<picker mode="time" :value="state.startTime" @change="bindStartTimeChange">
+						<picker  mode="time" :value="state.startTime" @change="bindStartTimeChange">
 							<view class="uni-input">{{ state.startTime }}</view>
 						</picker>
 					</view>
 
-					<view class="uni-list-cell-db timeItem">
-						<view class="uni-list-cell-left">
+					<view class="uni-list-cell-db timeItem myItem">
+						<view class="uni-list-cell-left drz">
 							结束时间
 						</view>
 						<picker mode="time" :value="state.endTime" @change="bindEndTimeChange">
@@ -58,8 +55,25 @@
 				</view>
 			</view>
 
-			<view class="uni-btn-v">
-				<button size="mini" type="primary" form-type="submit">注册</button>
+			<view class="uni-form-item uni-column myItem">
+				<view class="title myText">类型:</view>
+				<radio-group name="type">
+					<label>
+						<radio value="natural" class="myRadio"/>私人钓点<text></text>
+						<radio value="wild" class="myRadio"/><text>公开钓点</text>
+					</label>
+				</radio-group>
+			</view>
+			<view class="uni-form-item uni-column myItem">
+				<view class="title myText">描述:</view>
+
+			</view>
+			<view class="uni-form-item uni-textarea textarea">
+				<textarea style="padding-left: 10px;" placeholder-style="color:#FFF" placeholder="请输入描述信息"/>
+			</view>
+
+			<view class="uni-btn-v myItem">
+				<button size="mini" type="primary" form-type="submit" style="background-color:rgba(124, 0, 13, 1);">注册</button>
 				<button size="mini" form-type="reset">清空</button>
 			</view>
 		</form>
@@ -154,14 +168,21 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+.drz{
+	display: inline-block;
+	width: 17vw;
+	text-align: left;
+	padding-left: 14px;	
+}
 .addFish {
 	display: flex;
+	position: relative;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	height: 100vh;
 	width: 100vw;
-
+	font-size: 16px;
 	.myForm {
 		display: flex;
 		justify-content: center;
@@ -170,13 +191,39 @@ onMounted(() => {
 		border-radius: 15px;
 		background: rgba(255, 255, 255, 0.1);
 		backdrop-filter: blur(10px);
-		color: #fff;
-		text-align: center;
+		color: rgba(124, 0, 13, 1);
 		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-
+		.textarea{
+            background: rgba(124, 0, 13, 0.5);
+		}
+		input{
+			position: fixed;
+			padding-left: 10px;
+			right: 16%;
+			background: rgba(124, 0, 13, 0.5);
+			backdrop-filter: blur(10px);
+			border-radius: 10px;
+		}
+		.mySlider{
+			position: relative;
+			left: 10px;
+			border-radius: 6px;
+			background: rgba(124, 0, 13, 0.5);
+		}
 		.myItem {
 			display: flex;
 			flex-direction: row;
+			padding-top: 20px;
+			.myText{
+				display: inline-block;
+				width: 17vw;
+                text-align: left;
+                padding-left: 14px;			
+			}
+			.myRadio{
+				// display: none;
+				transform:scale(0.7)
+			}
 		}
 		.uni-list{
 			.timeItem{
