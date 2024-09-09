@@ -29,7 +29,7 @@
 				<input class="uni-input" name="number" placeholder="请输入号码" />
 			</view>
 			<view class="uni-form-item uni-column " style="padding-top: 10px">
-				<view class="myText drz">评价</view>
+				<view class="myText drz">评价:</view>
 				<slider backgroundColor="#000000" block-color="#814d59" :block-size="20" class="mySlider" :min=0 :max=5 name="slider" show-value></slider>
 			</view>
 			<view class="uni-list">
@@ -72,30 +72,52 @@
 				<textarea style="padding-left: 10px;" placeholder-style="color:#FFF" placeholder="请输入描述信息"/>
 			</view>
 
+
+
+			<view class="uni-form-item uni-column myItem">
+				<view class="title myText">鱼种:</view>
+			</view>
+			<view class="uni-form-item uni-column">
+				<uni-section title="基础多选" type="line" style="width: 40vw;">
+					<mySelect ref="RefChild" v-model="state.value1" collapse-tags :collapse-tags-num="3" multiple dataKey="label"
+						dataValue="value" :localdata="data" @change="change"/>
+				</uni-section>
+			</view>
+
+
 			<view class="uni-btn-v myItem">
 				<button size="mini" type="primary" form-type="submit" style="background-color:rgba(124, 0, 13, 1);">注册</button>
 				<button size="mini" form-type="reset">清空</button>
 			</view>
 		</form>
 	</view>
-	<view class="img">
-		<img :src="image_url" alt="Fish Image" style="width: 100%; height: 100%; object-fit: cover;" />
-	</view>
-
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, reactive } from 'vue';
+import { onMounted, ref, reactive, onBeforeMount } from 'vue';
 import ApiService from "../../utils/request";
 import config from "../../../config";
 import { useRegisterStore } from '../../stores/index';
 import hooks from '../../hooks/addFishHook';
+import mySelect from "../../components/addPoint/select.vue";
 const { state, updateUserName, updatePhoneNumber, updateStartTime, updateEndTime, bindStartTimeChange, bindEndTimeChange } = hooks;
 const registerStore = useRegisterStore();
 // 中国手机号码正则表达式
 const regexChina = /^1[3-9]\d{9}$/;
 const {API_BASE_URL,weRegister } = config
 const image_url = ref(`${API_BASE_URL}/static/fish.png`);
+const data = ref([{}])
+const RefChild = ref()
+const change = (e:any) =>{
+	console.log(e);
+	
+}
+
+const selectTable = () => {
+   if (RefChild.value) {
+     RefChild.value.clearVal();
+   }
+}
 
 const formSubmit = (v: any) => {
 	// 从事件对象中提取表单数据
@@ -159,10 +181,18 @@ const formSubmit = (v: any) => {
 const formReset = () => {
 	updateStartTime('09:00')
 	updateEndTime('18:00')
+	selectTable()
 }
+
+onBeforeMount(() => {
+	setTimeout(() => {
+		data.value = state.opthions
+	}, 500);
+})
 onMounted(() => {
 
 })
+
 
 
 </script>
@@ -180,17 +210,19 @@ onMounted(() => {
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	height: 100vh;
+	height: 100%;
 	width: 100vw;
 	font-size: 16px;
+	background-image: linear-gradient(120deg, #fccb90 0%, #d57eeb 100%);
+	background-size: cover;
+	box-sizing: border-box;
 	.myForm {
 		display: flex;
 		justify-content: center;
-		width: 80vw;
-		height: 100vh;
-		border-radius: 15px;
+		width: 100vw;
+		height: 100%;
 		background: rgba(255, 255, 255, 0.1);
-		backdrop-filter: blur(10px);
+		backdrop-filter: blur(6px);
 		color: rgba(124, 0, 13, 1);
 		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 		.textarea{
@@ -248,16 +280,5 @@ onMounted(() => {
 		}
 	}
 
-}
-
-.img {
-	width: 100%;
-	height: 100%;
-	position: absolute;
-	/* 确保它能覆盖整个视口 */
-	top: 0;
-	left: 0;
-	z-index: -1;
-	/* 合适的 z-index 值 */
 }
 </style>
