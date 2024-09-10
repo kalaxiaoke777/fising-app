@@ -210,7 +210,7 @@ onMounted(() => {
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	height: 100%;
+	height: 100vh;
 	width: 100vw;
 	font-size: 16px;
 	background-image: linear-gradient(120deg, #fccb90 0%, #d57eeb 100%);
@@ -220,7 +220,7 @@ onMounted(() => {
 		display: flex;
 		justify-content: center;
 		width: 100vw;
-		height: 100%;
+		height: 100vh;
 		background: rgba(255, 255, 255, 0.1);
 		backdrop-filter: blur(6px);
 		color: rgba(124, 0, 13, 1);

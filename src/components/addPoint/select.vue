@@ -25,7 +25,7 @@
                     <input v-else-if="filterable" class="uni-select__input-text" type="text" style="font-size: 12px;"
                         :placeholder="placeholderOld" v-model="current">
                     <view v-else class="uni-select__input-text uni-select__input-placeholder">{{typePlaceholder}}</view>
-                    <view v-if="current && clear" type="clear" color="#c0c4cc" size="24" @click="clearVal" />
+                    <uni-icons v-if="current && clear" type="clear" color="#c0c4cc" size="24" @click="clearVal" />
                     <view v-else :type="showSelector? 'top' : 'bottom'" size="14" color="#999" />
                 </view>
                 <view class="uni-select--mask" v-if="showSelector" @click="toggleSelector" />
