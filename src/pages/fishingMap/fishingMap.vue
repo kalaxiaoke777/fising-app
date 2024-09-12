@@ -10,14 +10,14 @@
                     <cover-view slot="callout">
                         <cover-view v-for="(item, index) in data.markers" :key="index">
                             <cover-view class="customCallout" :marker-id="item.id">
-                                <cover-view class="content">
-                                    {{ item.title }}
-                                    <cover-view>
-                                        图片位置
-                                        <cover-image :src="item.iconPath"
-                                            style="width: 10px; height: 10px;"></cover-image>
-                                    </cover-view>
-                                </cover-view>
+                                <cover-view class="cover-view">钓点名称：{{ item.title }}</cover-view>
+                                <cover-view class="cover-view">钓点类型：{{ getPondTypeInChinese(item.pond_type)  }}</cover-view>
+                                <cover-view class="cover-view">价格：{{ item.price ? item.price : '0' }} 元/次</cover-view>
+                                <cover-view class="cover-view">鱼种：{{ fishList(item.fish_species) }}</cover-view>
+                                <cover-view class="cover-view">开门时间：{{ item.opening_time }}</cover-view>
+                                <cover-view class="cover-view">关门时间：{{ item.closing_time }}</cover-view>
+                                <cover-view class="cover-view">评价：{{ item.rating }}</cover-view>
+                                <cover-view class="cover-view">描述：{{ item.description }}</cover-view>
                             </cover-view>
                         </cover-view>
                     </cover-view>
@@ -40,6 +40,14 @@ import { useCityStore } from "@/stores";
 import config from "../../../config"
 import ApiService from "@/utils/request"
 const {API_BASE_URL,getFish} = config
+
+// 定义类型
+const English_to_chinese: { [key: string]: string } = {
+    wild: "野塘",
+    black_pit: "黑坑",
+    natural: "天然",
+    happy: "欢乐"
+};
 const req = ApiService
 const cityStore = useCityStore();
 const coordinates = ref([0, 0]);
@@ -49,6 +57,13 @@ const isShow = ref({
     isEnableSatellite: false,
 });
 
+
+const fishList = (fish: string[]): string => {
+    return fish.join(', ');
+};
+const getPondTypeInChinese = (pond_type: string): string => {
+    return English_to_chinese[pond_type] || '未知类型';
+};
 
 const transformData = (locations:any) => {
     return locations.map((location:any) => ({
@@ -62,16 +77,16 @@ const transformData = (locations:any) => {
         description: location.description,
         rating: location.rating,
         price: location.price,
-        pond_type: location.pripond_typece,
+        pond_type: location.pond_type,
         phone_number: location.phone_number,
         opening_time: location.opening_time,
         closing_time: location.closing_time,
-        fish_species: location.species,
+        fish_species: location.fish_species,
         is_public: location.public,
         customCallout: {
             anchorY: 0,
             anchorX: 1,
-            display: "BYCLICK"
+            display: "ALWAYS"
         }
     }));
 };
@@ -151,14 +166,58 @@ const handleMarker = (e: any) => {
 </script>
 
 <style lang="scss" scoped>
+// 定义一些基本的变量
+$background-color: #f3e7e7; // 背景色
+$border-color: #bfff00; // 边框色
+$border-radius: 8px; // 圆角
+$padding: 10px; // 内边距
+$shadow: 0 4px 8px rgba(0, 0, 0, 0.2); // 更强的阴影
+$title-font-size: 16px; // 标题字体大小
+$text-font-size: 14px; // 正文字体大小
+$title-color: #333333; // 标题颜色
+$text-color: #666666; // 文字颜色
+$marker-prefix-color: #007BFF; // 标签前缀颜色
+$max-width: 400px; // 最大宽度
+
 .customCallout {
-    width: 200px;
-    height: 150px;
-    background: rgba(255, 255, 255, 0.72);
-    /* 背景色，可以调整透明度 */
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
-    /* 阴影效果 */
+    background: linear-gradient(135deg, #f3e7e7 0%, #f8d3d3 100%); // 渐变背景
+    border: 2px solid $border-color; // 更厚的边框
+    border-radius: $border-radius;
+    padding: $padding;
+    box-shadow: $shadow;
+    font-family: 'Roboto', sans-serif; // 更现代的字体
+    max-width: $max-width;
+    transition: transform 0.3s, box-shadow 0.3s; // 动画效果
+
+    // 增加鼠标悬停效果
+    &:hover {
+        transform: translateY(-5px); // 提升效果
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); // 更强的阴影
+    }
+
+    // 每一行的样式
+    .cover-view {
+        margin-bottom: 6px; // 增加底部间距
+        line-height: 1.6; // 增加行高
+        position: relative;
+        padding-left: 20px; // 为每一行添加左内边距
+
+        // 添加标签前缀
+        &::before {
+            content: '• '; // 使用点作为前缀
+            color: $marker-prefix-color;
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        // 修改文字颜色
+        &:nth-child(even) {
+            color: $text-color;
+            background-color: rgba(0, 0, 0, 0.02); // 行的背景色交替
+            padding: 8px; // 增加内边距
+        }
+    }
 }
-</style>帮我优化一下
+</style>
