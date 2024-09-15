@@ -5,5 +5,6 @@ const config = {
     weCallback: '/user_management/wechat/callback', // 登录验证
     weRegister: '/user_management/wechat/register/', // 登录验证
     getFish: '/fish/getFish', // 登录验证
+    searchFish: '/fish/searchFish', // 登录验证
 };
 export default config;

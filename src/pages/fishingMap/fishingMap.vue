@@ -5,10 +5,10 @@
                 <map enable-3D="true" :enable-overlooking="isShow.isOverlooking" :enable-traffic="isShow.isTraffic"
                     :enable-satellite="isShow.isEnableSatellite" @markertap="handleMarker"
                     style="width: 100%; height: 100vh" :latitude="coordinates[1]" :longitude="coordinates[0]"
-                    :scale="data.scale" :markers="data.markers" :show-location="true"
+                    :scale="data.scale" :markers="data.publicMarkers" :show-location="true"
                     :enable-indoorMap="true">
                     <cover-view slot="callout">
-                        <cover-view v-for="(item, index) in data.markers" :key="index">
+                        <cover-view v-for="(item, index) in data.publicMarkers" :key="index">
                             <cover-view class="customCallout" :marker-id="item.id">
                                 <cover-view class="cover-view">钓点名称：{{ item.title }}</cover-view>
                                 <cover-view class="cover-view">钓点类型：{{ getPondTypeInChinese(item.pond_type)  }}</cover-view>
@@ -28,6 +28,16 @@
     <searchPoint />
     <addPoint />
     <Tools :func="{ toggleTraffic, toggleEnableSatellite, isShow }" />
+    <view class="myCheckbox">
+        <view>
+            公开:
+        </view>
+        <checkbox borderColor="#a1d66a" color="red" style="transform:scale(0.7)" class="custom-checkbox" :checked="state.checkedPublic" @click="onChangePublic"></checkbox>
+        <view>
+            私人:
+        </view>
+        <checkbox borderColor="#a1d66a" color="red" style="transform:scale(0.7)" class="custom-checkbox" :checked="state.checkedPrivate" @click="onChangePrivate"></checkbox>
+    </view>
 </template>
 
 <script lang="ts" setup>
@@ -35,11 +45,13 @@ import addPoint from "@/components/addPoint/index.vue";
 import searchPoint from "@/components/search/index.vue";
 import Tools from "@/components/tools/index.vue";
 import { onLoad, onShow, onLaunch } from "@dcloudio/uni-app";
-import { onMounted, onBeforeMount,ref } from "vue";
+import { onMounted, onBeforeMount,ref,reactive } from "vue";
+import { useRegisterStore } from '../../stores/index';
 import { useCityStore } from "@/stores";
 import config from "../../../config"
 import ApiService from "@/utils/request"
 const {API_BASE_URL,getFish} = config
+const registerStore = useRegisterStore();
 
 // 定义类型
 const English_to_chinese: { [key: string]: string } = {
@@ -48,6 +60,11 @@ const English_to_chinese: { [key: string]: string } = {
     natural: "天然",
     happy: "欢乐"
 };
+const data = ref({
+    scale: 14,
+    publicMarkers: [],
+    privateMarkers: []
+})
 const req = ApiService
 const cityStore = useCityStore();
 const coordinates = ref([0, 0]);
@@ -56,6 +73,32 @@ const isShow = ref({
     isTraffic: false,
     isEnableSatellite: false,
 });
+const state = reactive({
+    checkedPublic: true,
+    checkedPrivate: false,
+})
+const onChangePublic = (e:any) =>{
+    state.checkedPublic = !state.checkedPublic
+    if(state.checkedPublic){
+        renderFish(getFish, {"isPublic":1})
+        return
+    }
+    data.value.publicMarkers = data.value.publicMarkers.filter((marker:any) => marker.is_public !== true);
+    console.log(data.value.publicMarkers);
+    
+}
+const onChangePrivate = (e:any) =>{
+    console.log(registerStore.openid);
+    
+    state.checkedPrivate = !state.checkedPrivate
+    if(state.checkedPrivate){
+        renderFish(getFish, {"isPublic":0,"openid":registerStore.openid})
+        console.log(data.value.publicMarkers);
+        return
+    }
+    data.value.publicMarkers = data.value.publicMarkers.filter((marker:any) => marker.is_public !== false);
+    console.log(data.value.publicMarkers);
+}
 
 
 const fishList = (fish: string[]): string => {
@@ -70,7 +113,7 @@ const transformData = (locations:any) => {
         id: location.pond_id,
         latitude: location.latitude,
         longitude: location.longitude,
-        iconPath: "../../static/fishing/location.png", // 你可以根据需要修改这个路径
+        iconPath: location.is_public ? "../../static/fishing/private.png" : "../../static/fishing/public.png", // 你可以根据需要修改这个路径
         width: 32,
         height: 32,
         title: location.name,
@@ -82,36 +125,37 @@ const transformData = (locations:any) => {
         opening_time: location.opening_time,
         closing_time: location.closing_time,
         fish_species: location.fish_species,
-        is_public: location.public,
+        is_public: location.is_public,
         customCallout: {
             anchorY: 0,
             anchorX: 1,
-            display: "ALWAYS"
+            display: "BYCLICK"
         }
     }));
 };
 
 
-const renderFish = (url: string, params: object) => {
+const renderFish = (url: string, params: any) => {
     ApiService.get(url, params)
         .then((response: any) => {
             console.log(response);
             const locations = response.data;
-            data.value.markers = transformData(locations); // 转换并更新markers
+            if (params.isPublic === 1){
+                data.value.publicMarkers = data.value.publicMarkers.concat(transformData(locations))
+            }
+            else{
+                data.value.publicMarkers = data.value.publicMarkers.concat(transformData(locations))
+            }
+            
         })
         .catch(error => {
             console.error('请求失败:', error);
         });
 }
-onLoad(() => {
-    console.log("jinru1");
-    
-    renderFish(getFish, {"isPublic":1})
+onLoad(() => {    
+    renderFish(getFish, {"isPublic":state.checkedPublic ? 1 : 0})
 })
-const data = ref({
-    scale: 14,
-    markers: []
-})
+
 
 onBeforeMount(() => {
     cityStore.setCityName("成都")
@@ -179,15 +223,28 @@ $text-color: #666666; // 文字颜色
 $marker-prefix-color: #007BFF; // 标签前缀颜色
 $max-width: 400px; // 最大宽度
 
+.myCheckbox {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    left: 5px;
+    bottom: 1%;
+    padding: 5px;
+    border-radius: 2px solid rgba(230, 230, 9, 0.85);
+    background-color: rgba(247, 186, 142, 0.8);
+}
+
+
 .customCallout {
-    background: linear-gradient(135deg, #f3e7e7 0%, #f8d3d3 100%); // 渐变背景
+    background-color: rgba(255, 192, 203,0.85);
     border: 2px solid $border-color; // 更厚的边框
     border-radius: $border-radius;
     padding: $padding;
     box-shadow: $shadow;
     font-family: 'Roboto', sans-serif; // 更现代的字体
     max-width: $max-width;
-    transition: transform 0.3s, box-shadow 0.3s; // 动画效果
 
     // 增加鼠标悬停效果
     &:hover {
@@ -215,7 +272,7 @@ $max-width: 400px; // 最大宽度
         // 修改文字颜色
         &:nth-child(even) {
             color: $text-color;
-            background-color: rgba(0, 0, 0, 0.02); // 行的背景色交替
+            background-color: rgba(0, 0, 0, 0.08); // 行的背景色交替
             padding: 8px; // 增加内边距
         }
     }

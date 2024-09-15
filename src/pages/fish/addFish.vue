@@ -154,13 +154,11 @@ const formSubmit = (v: any) => {
 		});
 		return;
 	}
-	console.log(69, registerStore.openid, registerStore.session_key);
 
 	const data: object = {
 		"username": userName,
 		"phoneNumber": phoneNumber,
 		"openId": registerStore.openid,
-		"userKey": registerStore.session_key
 	}
 	ApiService.post(weRegister, data)
 		.then((response: any) => {
