@@ -32,15 +32,15 @@
         <view>
             公开:
         </view>
-        <checkbox borderColor="#a1d66a" color="red" style="transform:scale(0.7)" class="custom-checkbox" :checked="state.checkedPublic" @click="onChangePublic"></checkbox>
+        <checkbox borderColor="red" color="red" style="transform:scale(0.9)" class="custom-checkbox" :checked="state.checkedPublic" @click="onChangePublic"></checkbox>
         <view>
             私人:
         </view>
-        <checkbox borderColor="#a1d66a" color="red" style="transform:scale(0.7)" class="custom-checkbox" :checked="state.checkedPrivate" @click="onChangePrivate"></checkbox>
+        <checkbox borderColor="#a1d66a" color="yellow" style="transform:scale(0.9)" class="custom-checkbox" :checked="state.checkedPrivate" @click="onChangePrivate"></checkbox>
         <view>
             收藏:
         </view>
-        <checkbox borderColor="#a1d66a" color="red" style="transform:scale(0.7)" class="custom-checkbox" :checked="state.checkedFavorite" @click="onChangeFavorite"></checkbox>
+        <checkbox borderColor="#a1d66a" color="blue" style="transform:scale(0.9)" class="custom-checkbox" :checked="state.checkedFavorite" @click="onChangeFavorite"></checkbox>
     </view>
 </template>
 

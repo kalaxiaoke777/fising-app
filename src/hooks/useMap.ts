@@ -108,7 +108,7 @@ const useMap = () => {
         let openid = getOpenid();
         state.checkedFavorite = !state.checkedFavorite;
         if (state.checkedFavorite) {
-            renderFish(getFish, { "isPublic": 0, "openid": openid });
+            renderFish(getFish, { "openid": openid, "isFavorite": 1, });
         } else {
             data.value.publicMarkers = data.value.publicMarkers.filter((marker: any) => marker.is_public !== false);
         }
