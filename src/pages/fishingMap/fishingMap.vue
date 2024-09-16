@@ -37,6 +37,10 @@
             私人:
         </view>
         <checkbox borderColor="#a1d66a" color="red" style="transform:scale(0.7)" class="custom-checkbox" :checked="state.checkedPrivate" @click="onChangePrivate"></checkbox>
+        <view>
+            收藏:
+        </view>
+        <checkbox borderColor="#a1d66a" color="red" style="transform:scale(0.7)" class="custom-checkbox" :checked="state.checkedFavorite" @click="onChangeFavorite"></checkbox>
     </view>
 </template>
 
@@ -44,169 +48,10 @@
 import addPoint from "@/components/addPoint/index.vue";
 import searchPoint from "@/components/search/index.vue";
 import Tools from "@/components/tools/index.vue";
-import { onLoad, onShow, onLaunch } from "@dcloudio/uni-app";
-import { onMounted, onBeforeMount,ref,reactive } from "vue";
-import { useRegisterStore } from '../../stores/index';
-import { useCityStore } from "@/stores";
-import config from "../../../config"
-import ApiService from "@/utils/request"
-const {API_BASE_URL,getFish} = config
-const registerStore = useRegisterStore();
+import useMap from "../../hooks/useMap"
 
-// 定义类型
-const English_to_chinese: { [key: string]: string } = {
-    wild: "野塘",
-    black_pit: "黑坑",
-    natural: "天然",
-    happy: "欢乐"
-};
-const data = ref({
-    scale: 14,
-    publicMarkers: [],
-    privateMarkers: []
-})
-const req = ApiService
-const cityStore = useCityStore();
-const coordinates = ref([0, 0]);
-const isShow = ref({
-    isOverlooking: false,
-    isTraffic: false,
-    isEnableSatellite: false,
-});
-const state = reactive({
-    checkedPublic: true,
-    checkedPrivate: false,
-})
-const onChangePublic = (e:any) =>{
-    state.checkedPublic = !state.checkedPublic
-    if(state.checkedPublic){
-        renderFish(getFish, {"isPublic":1})
-        return
-    }
-    data.value.publicMarkers = data.value.publicMarkers.filter((marker:any) => marker.is_public !== true);
-    console.log(data.value.publicMarkers);
-    
-}
-const onChangePrivate = (e:any) =>{
-    console.log(registerStore.openid);
-    
-    state.checkedPrivate = !state.checkedPrivate
-    if(state.checkedPrivate){
-        renderFish(getFish, {"isPublic":0,"openid":registerStore.openid})
-        console.log(data.value.publicMarkers);
-        return
-    }
-    data.value.publicMarkers = data.value.publicMarkers.filter((marker:any) => marker.is_public !== false);
-    console.log(data.value.publicMarkers);
-}
+const {data,coordinates,isShow,state,getPondTypeInChinese,onChangePublic,onChangePrivate,onChangeFavorite,toggleTraffic,toggleEnableSatellite,handleMapTap,handleMarker,fishList} = useMap(); 
 
-
-const fishList = (fish: string[]): string => {
-    return fish.join(', ');
-};
-const getPondTypeInChinese = (pond_type: string): string => {
-    return English_to_chinese[pond_type] || '未知类型';
-};
-
-const transformData = (locations:any) => {
-    return locations.map((location:any) => ({
-        id: location.pond_id,
-        latitude: location.latitude,
-        longitude: location.longitude,
-        iconPath: location.is_public ? "../../static/fishing/private.png" : "../../static/fishing/public.png", // 你可以根据需要修改这个路径
-        width: 32,
-        height: 32,
-        title: location.name,
-        description: location.description,
-        rating: location.rating,
-        price: location.price,
-        pond_type: location.pond_type,
-        phone_number: location.phone_number,
-        opening_time: location.opening_time,
-        closing_time: location.closing_time,
-        fish_species: location.fish_species,
-        is_public: location.is_public,
-        customCallout: {
-            anchorY: 0,
-            anchorX: 1,
-            display: "BYCLICK"
-        }
-    }));
-};
-
-
-const renderFish = (url: string, params: any) => {
-    ApiService.get(url, params)
-        .then((response: any) => {
-            console.log(response);
-            const locations = response.data;
-            if (params.isPublic === 1){
-                data.value.publicMarkers = data.value.publicMarkers.concat(transformData(locations))
-            }
-            else{
-                data.value.publicMarkers = data.value.publicMarkers.concat(transformData(locations))
-            }
-            
-        })
-        .catch(error => {
-            console.error('请求失败:', error);
-        });
-}
-onLoad(() => {    
-    renderFish(getFish, {"isPublic":state.checkedPublic ? 1 : 0})
-})
-
-
-onBeforeMount(() => {
-    cityStore.setCityName("成都")
-    console.log(cityStore.cityName);
-
-
-    uni.authorize({
-        scope: 'scope.userLocation',
-        success() {
-            // 用户已授权，可以获取地理位置信息
-            uni.getLocation({
-                type: 'wgs84', // 返回可以用于uni.openLocation的经纬度
-                success: (res) => {
-                    console.log(1345, res);
-
-                    coordinates.value[1] = res.latitude
-                    coordinates.value[0] = res.longitude
-                    data.value.scale = 15
-                },
-                fail: () => {
-                    coordinates.value = [104.0431035344202, 30.642415269320068];
-                    // 获取地理位置失败的处理逻辑
-                    uni.showToast({
-                        title: '无法获取地理位置',
-                        icon: 'none'
-                    });
-                }
-            });
-        },
-        fail() {
-            // 用户拒绝授权，你可以引导用户到设置页面开启权限
-            uni.showToast({
-                title: '请在系统设置中打开位置权限',
-                icon: 'none'
-            });
-        }
-    });
-})
-
-const toggleTraffic = () => {
-    isShow.value.isTraffic = !isShow.value.isTraffic;
-}
-const toggleEnableSatellite = () => {
-    isShow.value.isEnableSatellite = !isShow.value.isEnableSatellite;
-}
-const handleMapTap = (e: any) => {
-    console.log(e);
-};
-const handleMarker = (e: any) => {
-    console.log(e);
-}
 </script>
 
 <style lang="scss" scoped>

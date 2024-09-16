@@ -4,7 +4,6 @@ import { ref } from "vue";
 export const useUserStore = defineStore('user', {
     state: () => ({
         token: undefined as string | undefined,
-
     }),
     actions: {
         setUserName(token: string) {
@@ -17,10 +16,19 @@ export const useUserStore = defineStore('user', {
     persist: {
         storage: {
             getItem(key: string) {
-                return localStorage.getItem(key);
+                try {
+                    return uni.getStorageSync(key);
+                } catch (e) {
+                    console.error('getStorageSync error:', e);
+                    return null;
+                }
             },
             setItem(key: string, value: string) {
-                uni.setStorageSync(key, value);
+                try {
+                    uni.setStorageSync(key, value);
+                } catch (e) {
+                    console.error('setStorageSync error:', e);
+                }
             },
         },
     },
