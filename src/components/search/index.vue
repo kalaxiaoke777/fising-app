@@ -13,17 +13,12 @@
 <script lang="ts" setup>
 import { ref, computed, reactive } from 'vue';
 import config from "../../../config"
-
+import ApiService from "../../utils/request";
 const { API_BASE_URL, searchFish } = config
 const state = reactive({
     searchQuery: '',
     isShow: false,
-    locations: [
-        { id: 1, name: '东湖钓场', distance: 12 },
-        { id: 2, name: '西湖钓场', distance: 13 },
-        { id: 3, name: '南湖钓场', distance: 11 },
-        { id: 4, name: '北湖钓场', distance: 14 },
-    ]
+    locations: []
 })
 
 let timeoutId: number | null = null;
@@ -32,6 +27,36 @@ const onChange = (e: any) => {
     console.log(e);
 
 };
+
+const getOpenid = () => {
+    const register = uni.getStorageSync('register');
+    try {
+        return JSON.parse(register || '{}').openid;
+    } catch (e) {
+        return '';
+    }
+};
+
+const getLocation = async (data: any) => {
+    try {
+        const response = await ApiService.get(searchFish, data);
+        return response;
+    } catch (error) {
+        return [];
+    }
+};
+
+const fetchData = async (name: string) => {
+    const openId = getOpenid();
+    const data: any = {
+        name
+    };
+    if (openId) {
+        data['id'] = openId;
+    }
+    return await getLocation(data);
+};
+
 const changeInput = (e: any) => {
     state.searchQuery = e.target.value;
     if (state.searchQuery === "") {
@@ -39,16 +64,21 @@ const changeInput = (e: any) => {
     } else {
         state.isShow = true;
     }
-    timeoutId = setTimeout(() => {
-        console.log(state.searchQuery);
 
-    }, 800);
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(async () => {
+        try {
+            let res:any = await fetchData(state.searchQuery);
+            state.locations = res.data
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    }, 900);
 };
 
 </script>
 
 <style lang="scss" scoped>
-
 .input {
     position: fixed;
     display: flex;

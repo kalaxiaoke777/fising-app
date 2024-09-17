@@ -36,11 +36,11 @@
         <view>
             私人:
         </view>
-        <checkbox borderColor="#a1d66a" color="yellow" style="transform:scale(0.9)" class="custom-checkbox" :checked="state.checkedPrivate" @click="onChangePrivate"></checkbox>
+        <checkbox borderColor="#a1d66a" color="blue" style="transform:scale(0.9)" class="custom-checkbox" :checked="state.checkedPrivate" @click="onChangePrivate"></checkbox>
         <view>
             收藏:
         </view>
-        <checkbox borderColor="#a1d66a" color="blue" style="transform:scale(0.9)" class="custom-checkbox" :checked="state.checkedFavorite" @click="onChangeFavorite"></checkbox>
+        <checkbox borderColor="#a1d66a" color="yellow" style="transform:scale(0.9)" :disabled="isFavoriteDisabled()" class="custom-checkbox" :checked="checkedFavorite()" @click="onChangeFavorite"></checkbox>
     </view>
 </template>
 
@@ -50,12 +50,11 @@ import searchPoint from "@/components/search/index.vue";
 import Tools from "@/components/tools/index.vue";
 import useMap from "../../hooks/useMap"
 
-const {data,coordinates,isShow,state,getPondTypeInChinese,onChangePublic,onChangePrivate,onChangeFavorite,toggleTraffic,toggleEnableSatellite,handleMapTap,handleMarker,fishList} = useMap(); 
+const {data,coordinates,isShow,state,handleFavorite,getPondTypeInChinese,onChangePublic,onChangePrivate,onChangeFavorite,toggleTraffic,toggleEnableSatellite,handleMapTap,handleMarker,fishList,isFavoriteDisabled,checkedFavorite} = useMap(); 
 
 </script>
 
 <style lang="scss" scoped>
-// 定义一些基本的变量
 $background-color: #f3e7e7; // 背景色
 $border-color: #bfff00; // 边框色
 $border-radius: 8px; // 圆角
@@ -90,6 +89,15 @@ $max-width: 400px; // 最大宽度
     box-shadow: $shadow;
     font-family: 'Roboto', sans-serif; // 更现代的字体
     max-width: $max-width;
+
+    .view{
+        width: 32px;
+        height: 32px;
+        position:  absolute;
+        right: 10px;
+        top: 2px;
+        z-index: 999929;
+    }
 
     // 增加鼠标悬停效果
     &:hover {

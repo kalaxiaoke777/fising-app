@@ -5,7 +5,7 @@ import { useCityStore } from "@/stores";
 import ApiService from "@/utils/request";
 import config from "../../config";
 
-const { API_BASE_URL, getFish } = config;
+const { API_BASE_URL, getFish, searchFish } = config;
 const registerStore = useRegisterStore();
 
 const English_to_chinese: { [key: string]: string } = {
@@ -49,7 +49,7 @@ const useMap = () => {
     };
 
     const transformData = (locations: any) => {
-        return locations.map((location: { pond_id: any; latitude: any; longitude: any; is_public: any; name: any; description: any; rating: any; price: any; pond_type: any; phone_number: any; opening_time: any; closing_time: any; fish_species: any; }) => ({
+        return locations.map((location: { pond_id: any; latitude: any; longitude: any; is_public: any; name: any; description: any; rating: any; price: any; pond_type: any; phone_number: any; opening_time: any; closing_time: any; fish_species: any; is_favorite: any }) => ({
             id: location.pond_id,
             latitude: location.latitude,
             longitude: location.longitude,
@@ -66,19 +66,63 @@ const useMap = () => {
             closing_time: location.closing_time,
             fish_species: location.fish_species,
             is_public: location.is_public,
+            is_favorite: location.is_favorite,
             customCallout: {
                 anchorY: 0,
                 anchorX: 1,
-                display: "BYCLICK"
+                display: "ALWAYS"
             }
         }));
     };
 
-    const renderFish = (url: string, params: any) => {
+    const favortite = (params: any) => {
+        ApiService.get(searchFish, params)
+            .then((response: any) => {
+                data.value.publicMarkers.forEach((marker: any) => {
+                    if (marker.id === params.fishing_pond) {
+                        marker.is_favorite = !marker.is_favorite;
+                    }
+
+                })
+            })
+            .catch(error => {
+                console.error('请求失败:', error);
+            });
+    }
+    const handleFavorite = (pond_id: string) => {
+        const openid = getOpenid();
+        console.log(openid);
+        
+        if (!openid) {
+            uni.showModal({
+                title: '提示',
+                content: '请先登录',
+                showCancel: false,
+            });
+            uni.navigateTo({ url: '/pages/my/my' });
+            return;
+        }
+        favortite({ user: openid, fishing_pond: pond_id, favortite: true });
+
+    }
+    const renderFish = (url: string, params: any, isFavorite: boolean) => {
         ApiService.get(url, params)
             .then((response: any) => {
                 const locations = response.data;
-                data.value.publicMarkers = data.value.publicMarkers.concat(transformData(locations));
+                if (isFavorite) {
+                    const locationIds = new Set(locations.map((item: any) => item.pond_id));
+
+                    data.value.publicMarkers.forEach((marker: any) => {
+                        if (locationIds.has(marker.id)) {
+                            marker.iconPath = "../../static/fishing/favorite.png"
+                            marker.is_favorite = true
+                        }
+                    });
+                }
+                else {
+                    data.value.publicMarkers = data.value.publicMarkers.concat(transformData(locations));
+                }
+
             })
             .catch(error => {
                 console.error('请求失败:', error);
@@ -88,7 +132,7 @@ const useMap = () => {
     const onChangePublic = (e: any) => {
         state.checkedPublic = !state.checkedPublic;
         if (state.checkedPublic) {
-            renderFish(getFish, { "isPublic": 1 });
+            renderFish(getFish, { "isPublic": 1 }, false);
         } else {
             data.value.publicMarkers = data.value.publicMarkers.filter((marker: any) => marker.is_public !== true);
         }
@@ -98,7 +142,7 @@ const useMap = () => {
         let openid = getOpenid();
         state.checkedPrivate = !state.checkedPrivate;
         if (state.checkedPrivate) {
-            renderFish(getFish, { "isPublic": 0, "openid": openid });
+            renderFish(getFish, { "isPublic": 0, "openid": openid }, false);
         } else {
             data.value.publicMarkers = data.value.publicMarkers.filter((marker: any) => marker.is_public !== false);
         }
@@ -108,9 +152,12 @@ const useMap = () => {
         let openid = getOpenid();
         state.checkedFavorite = !state.checkedFavorite;
         if (state.checkedFavorite) {
-            renderFish(getFish, { "openid": openid, "isFavorite": 1, });
+            renderFish(getFish, { "openid": openid, "isFavorite": 1, }, true);
         } else {
-            data.value.publicMarkers = data.value.publicMarkers.filter((marker: any) => marker.is_public !== false);
+            data.value.publicMarkers.forEach((marker: any) => {
+                marker.iconPath = marker.is_public ? "../../static/fishing/private.png" : "../../static/fishing/public.png"
+                marker.is_favorite = false;
+            })
         }
     };
 
@@ -131,13 +178,12 @@ const useMap = () => {
     };
 
     onMounted(() => {
-        renderFish(getFish, { "isPublic": state.checkedPublic ? 1 : 0 });
+        renderFish(getFish, { "isPublic": state.checkedPublic ? 1 : 0 }, false);
     });
 
     onBeforeMount(() => {
         const cityStore = useCityStore();
         cityStore.setCityName("成都");
-        console.log(cityStore.cityName);
 
         uni.authorize({
             scope: 'scope.userLocation',
@@ -170,11 +216,23 @@ const useMap = () => {
         return fish.join(', ');
     };
 
+    const isFavoriteDisabled = () => {
+        checkedFavorite()
+        return !(state.checkedPrivate || state.checkedPublic);
+    }
+    const checkedFavorite = () => {
+        if (state.checkedPrivate === false && state.checkedPublic === false){
+            state.checkedFavorite = false;
+            return false;
+        }
+      };
+
     return {
         data,
         coordinates,
         isShow,
         state,
+        checkedFavorite,
         onChangePublic,
         onChangePrivate,
         onChangeFavorite,
@@ -183,7 +241,9 @@ const useMap = () => {
         handleMapTap,
         handleMarker,
         getPondTypeInChinese,
-        fishList
+        fishList,
+        handleFavorite,
+        isFavoriteDisabled
     };
 };
 
