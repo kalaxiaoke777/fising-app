@@ -2,7 +2,10 @@
     <view class="input">
         <input @input="changeInput" type="text" class="Finput" v-model="state.searchQuery" placeholder="搜索钓场" />
         <ul v-if="state.isShow" class="myUl">
-            <li class="myLi" v-for="location in state.locations" :key="location.id">
+            <li v-if="state.locations.length === 0" class="myLi">
+                <span class="info">没有找到相关钓场</span>
+            </li>
+            <li @click="hanldePop(location)" class="myLi" v-for="location in state.locations" :key="location.id">
                 <span class="name">{{ location.name }}</span>
                 <span class="info">距离您:{{ location.distance }} km</span>
             </li>
@@ -11,21 +14,42 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, reactive } from 'vue';
-import config from "../../../config"
+import { ref, reactive } from 'vue';
+import config from "../../../config";
 import ApiService from "../../utils/request";
-const { API_BASE_URL, searchFish } = config
+interface ToolsProps {
+  func: any
+}
+// 定义组件接收的props
+const props = defineProps({
+  func: {
+    type: Object as () => ToolsProps['func'],
+    required: true
+  }
+});
+const { API_BASE_URL, searchFish } = config;
 const state = reactive({
     searchQuery: '',
     isShow: false,
     locations: []
-})
+});
 
 let timeoutId: number | null = null;
 
+
+
+const hanldePop = (location:{is_public:boolean,longitude:Number,latitude:Number,id:number}) =>{
+    if (location.is_public) {
+        props.func.ensurePublic(location.longitude, location.latitude, location.id)
+    }else{
+        props.func.ensurePrivate(location.longitude, location.latitude, location.id)
+    }
+    state.isShow = false
+    state.searchQuery = ''
+}
+
 const onChange = (e: any) => {
     console.log(e);
-
 };
 
 const getOpenid = () => {
@@ -42,40 +66,39 @@ const getLocation = async (data: any) => {
         const response = await ApiService.get(searchFish, data);
         return response;
     } catch (error) {
-        return [];
+        return { data: [] }; // 确保返回数据格式一致
     }
 };
 
 const fetchData = async (name: string) => {
     const openId = getOpenid();
-    const data: any = {
-        name
-    };
+    const data: any = { name };
     if (openId) {
         data['id'] = openId;
     }
-    return await getLocation(data);
+    const response = await getLocation(data);
+    return response.data;
 };
 
-const changeInput = (e: any) => {
+const changeInput = async (e: any) => {
     state.searchQuery = e.target.value;
     if (state.searchQuery === "") {
         state.isShow = false;
+        state.locations = []; // 清空结果
     } else {
         state.isShow = true;
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(async () => {
+            try {
+                const res = await fetchData(state.searchQuery);
+                state.locations = res.length > 0 ? res : []; // 赋值给 locations
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                state.locations = []; // 出错时也清空结果
+            }
+        }, 500);
     }
-
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(async () => {
-        try {
-            let res:any = await fetchData(state.searchQuery);
-            state.locations = res.data
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    }, 900);
 };
-
 </script>
 
 <style lang="scss" scoped>

@@ -25,7 +25,7 @@
             </view>
         </view>
     </view>
-    <searchPoint />
+    <searchPoint :func="{ ensurePublic, ensurePrivate }"/>
     <addPoint />
     <Tools :func="{ toggleTraffic, toggleEnableSatellite, isShow }" />
     <view class="myCheckbox">
@@ -50,7 +50,7 @@ import searchPoint from "@/components/search/index.vue";
 import Tools from "@/components/tools/index.vue";
 import useMap from "../../hooks/useMap"
 
-const {data,coordinates,isShow,state,handleFavorite,getPondTypeInChinese,onChangePublic,onChangePrivate,onChangeFavorite,toggleTraffic,toggleEnableSatellite,handleMapTap,handleMarker,fishList,isFavoriteDisabled,checkedFavorite} = useMap(); 
+const {data,coordinates,isShow,state,ensurePublic,ensurePrivate,handleFavorite,getPondTypeInChinese,onChangePublic,onChangePrivate,onChangeFavorite,toggleTraffic,toggleEnableSatellite,handleMapTap,handleMarker,fishList,isFavoriteDisabled,checkedFavorite} = useMap(); 
 
 </script>
 

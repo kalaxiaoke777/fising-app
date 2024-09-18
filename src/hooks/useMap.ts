@@ -53,7 +53,7 @@ const useMap = () => {
             id: location.pond_id,
             latitude: location.latitude,
             longitude: location.longitude,
-            iconPath: location.is_public ? "../../static/fishing/private.png" : "../../static/fishing/public.png",
+            iconPath: location.is_public ? "../../static/fishing/public.png" : "../../static/fishing/private.png",
             width: 32,
             height: 32,
             title: location.name,
@@ -70,7 +70,7 @@ const useMap = () => {
             customCallout: {
                 anchorY: 0,
                 anchorX: 1,
-                display: "ALWAYS"
+                display: "BYCLICK"
             }
         }));
     };
@@ -92,7 +92,7 @@ const useMap = () => {
     const handleFavorite = (pond_id: string) => {
         const openid = getOpenid();
         console.log(openid);
-        
+
         if (!openid) {
             uni.showModal({
                 title: '提示',
@@ -155,7 +155,7 @@ const useMap = () => {
             renderFish(getFish, { "openid": openid, "isFavorite": 1, }, true);
         } else {
             data.value.publicMarkers.forEach((marker: any) => {
-                marker.iconPath = marker.is_public ? "../../static/fishing/private.png" : "../../static/fishing/public.png"
+                marker.iconPath = marker.is_public ? "../../static/fishing/public.png" : "../../static/fishing/private.png"
                 marker.is_favorite = false;
             })
         }
@@ -221,17 +221,55 @@ const useMap = () => {
         return !(state.checkedPrivate || state.checkedPublic);
     }
     const checkedFavorite = () => {
-        if (state.checkedPrivate === false && state.checkedPublic === false){
+        if (state.checkedPrivate === false && state.checkedPublic === false) {
             state.checkedFavorite = false;
             return false;
         }
-      };
+    };
+    const ensurePublic = (lon:number,lat:number,id:number) =>{
+        if (state.checkedPublic === false) {
+            state.checkedPublic = true;
+            renderFish(getFish, { "isPublic": 1 }, false);
+        }
+        let targetItem:any = data.value.publicMarkers.find((item:any) => item.id === id);
+        if (targetItem) {
+            let iconPath = targetItem.iconPath
+            targetItem.iconPath = "../../static/fishing/icon.png"
+            setTimeout(() => {
+                targetItem.iconPath = iconPath
+            }, 900);
+            
+        }
+        data.value.scale = 16
+        coordinates.value = [lon,lat];
+    }
+    const ensurePrivate = (lon:number,lat:number,id:number) =>{
+        const openid = getOpenid()
+        if (state.checkedPrivate === false) {
+            state.checkedPrivate = true;
+            renderFish(getFish, { "isPublic": 0, "openid": openid }, false);
+        }
+        let targetItem:any = data.value.publicMarkers.find((item:any) => item.id == id);
+        if (targetItem) {
+            let iconPath = targetItem.iconPath
+            targetItem.iconPath = "../../static/fishing/icon.png"
+            setTimeout(() => {
+                targetItem.iconPath = iconPath
+            }, 900);
+            
+        }
+        data.value.scale = 16
+        coordinates.value = [lon,lat];
+    }
+
 
     return {
         data,
         coordinates,
         isShow,
         state,
+        ensurePublic,
+        ensurePrivate,
         checkedFavorite,
         onChangePublic,
         onChangePrivate,
