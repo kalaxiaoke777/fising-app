@@ -6,7 +6,7 @@
                     :enable-satellite="isShow.isEnableSatellite" @markertap="handleMarker"
                     style="width: 100%; height: 100vh" :latitude="coordinates[1]" :longitude="coordinates[0]"
                     :scale="data.scale" :markers="data.publicMarkers" :show-location="true"
-                    :enable-indoorMap="true">
+                    :enable-indoorMap="true" @regionchange="regionchange">
                     <cover-view slot="callout">
                         <cover-view v-for="(item, index) in data.publicMarkers" :key="index">
                             <cover-view class="customCallout" :marker-id="item.id">
@@ -32,7 +32,7 @@
         <view>
             公开:
         </view>
-        <checkbox borderColor="red" color="red" style="transform:scale(0.9)" class="custom-checkbox" :checked="state.checkedPublic" @click="onChangePublic"></checkbox>
+        <checkbox borderColor="red" color="red" style="transform:scale(0.9)" class="custom-checkbox" :checked="state.checkedPublic" @click="onChangePublic" ></checkbox>
         <view>
             私人:
         </view>
@@ -50,7 +50,7 @@ import searchPoint from "@/components/search/index.vue";
 import Tools from "@/components/tools/index.vue";
 import useMap from "../../hooks/useMap"
 
-const {data,coordinates,isShow,state,ensurePublic,ensurePrivate,handleFavorite,getPondTypeInChinese,onChangePublic,onChangePrivate,onChangeFavorite,toggleTraffic,toggleEnableSatellite,handleMapTap,handleMarker,fishList,isFavoriteDisabled,checkedFavorite} = useMap(); 
+const {data,coordinates,isShow,state,regionchange,ensurePublic,ensurePrivate,getPondTypeInChinese,onChangePublic,onChangePrivate,onChangeFavorite,toggleTraffic,toggleEnableSatellite,handleMarker,fishList,isFavoriteDisabled,checkedFavorite} = useMap(); 
 
 </script>
 

@@ -40,11 +40,22 @@ const useMap = () => {
 
     const getOpenid = () => {
         const register = uni.getStorageSync('register');
+        if (!register) {
+
+            uni.switchTab({
+                url: '/pages/my/my'
+            })
+            uni.showModal({
+                title: '提示',
+                content: '请先登录',
+                showCancel: false,
+            });
+            return null;
+        }
         try {
             return JSON.parse(register || '{}').openid;
         } catch (e) {
-            console.error('Failed to parse user storage:', e);
-            return '';
+            return null;
         }
     };
 
@@ -91,15 +102,7 @@ const useMap = () => {
     }
     const handleFavorite = (pond_id: string) => {
         const openid = getOpenid();
-        console.log(openid);
-
-        if (!openid) {
-            uni.showModal({
-                title: '提示',
-                content: '请先登录',
-                showCancel: false,
-            });
-            uni.navigateTo({ url: '/pages/my/my' });
+        if(!openid){
             return;
         }
         favortite({ user: openid, fishing_pond: pond_id, favortite: true });
@@ -140,6 +143,11 @@ const useMap = () => {
 
     const onChangePrivate = (e: any) => {
         let openid = getOpenid();
+        
+        if(!openid){
+            state.checkedPrivate = false
+            return;
+        }
         state.checkedPrivate = !state.checkedPrivate;
         if (state.checkedPrivate) {
             renderFish(getFish, { "isPublic": 0, "openid": openid }, false);
@@ -151,6 +159,9 @@ const useMap = () => {
     const onChangeFavorite = () => {
         let openid = getOpenid();
         state.checkedFavorite = !state.checkedFavorite;
+        if(!openid){
+            return;
+        }
         if (state.checkedFavorite) {
             renderFish(getFish, { "openid": openid, "isFavorite": 1, }, true);
         } else {
@@ -242,9 +253,14 @@ const useMap = () => {
         }
         data.value.scale = 16
         coordinates.value = [lon,lat];
+        console.log(245,coordinates.value);
+        
     }
     const ensurePrivate = (lon:number,lat:number,id:number) =>{
         const openid = getOpenid()
+        if(!openid){
+            return;
+        }
         if (state.checkedPrivate === false) {
             state.checkedPrivate = true;
             renderFish(getFish, { "isPublic": 0, "openid": openid }, false);
@@ -261,6 +277,12 @@ const useMap = () => {
         data.value.scale = 16
         coordinates.value = [lon,lat];
     }
+    const regionchange = (e:any) => {
+        if(e.type === "end"){
+            coordinates.value = [e.target.centerLocation.longitude,e.target.centerLocation.latitude];
+        }
+        
+    }
 
 
     return {
@@ -268,6 +290,7 @@ const useMap = () => {
         coordinates,
         isShow,
         state,
+        regionchange,
         ensurePublic,
         ensurePrivate,
         checkedFavorite,

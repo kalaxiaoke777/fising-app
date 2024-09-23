@@ -78,14 +78,22 @@ const formSubmit = (v: any) => {
     }
     ApiService.post(weRegister, data)
         .then((response: any) => {
-            if (response.code === 50001) {
+            if (response.code === 200) {
+                
+
                 // 不存在则直接弹出填入手机号进行注册
-                uni.navigateTo({ url: '/pages/login/register' });
+                uni.navigateTo({ url: '/pages/login/login' });
+                uni.showModal({
+                    content: '注册成功',
+                    showCancel: false
+                });
             } else {
                 // 判断是否存在用户，如果存在则返回信息，持久化
+                uni.showModal({
+                    content: response.message,
+                    showCancel: false
+                });
             }
-            console.log('数据获取成功:', response);
-            // 处理成功的响应数据
         })
         .catch(error => {
             console.error('请求失败:', error);
