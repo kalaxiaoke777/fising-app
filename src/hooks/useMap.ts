@@ -19,7 +19,8 @@ const useMap = () => {
     const data = ref({
         scale: 14,
         publicMarkers: [],
-        privateMarkers: []
+        privateMarkers: [],
+        
     });
     const getPondTypeInChinese = (pond_type: string): string => {
         return English_to_chinese[pond_type] || '未知类型';
@@ -35,7 +36,8 @@ const useMap = () => {
     const state = reactive({
         checkedPublic: true,
         checkedPrivate: false,
-        checkedFavorite: false
+        checkedFavorite: false,
+        onloadLocation:[0,0]
     });
 
     const getOpenid = () => {
@@ -204,10 +206,12 @@ const useMap = () => {
                     success: (res) => {
                         coordinates.value[1] = res.latitude;
                         coordinates.value[0] = res.longitude;
+                        state.onloadLocation = [res.longitude,res.latitude]
                         data.value.scale = 15;
                     },
                     fail: () => {
                         coordinates.value = [104.0431035344202, 30.642415269320068];
+                        state.onloadLocation = [104.0431035344202, 30.642415269320068]
                         uni.showToast({
                             title: '无法获取地理位置',
                             icon: 'none'

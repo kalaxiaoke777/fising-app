@@ -72,7 +72,7 @@ const getLocation = async (data: any) => {
 
 const fetchData = async (name: string) => {
     const openId = getOpenid();
-    const data: any = { name };
+    const data: any = { name, onloadLocation:props.func.state.onloadLocation };
     if (openId) {
         data['id'] = openId;
     }

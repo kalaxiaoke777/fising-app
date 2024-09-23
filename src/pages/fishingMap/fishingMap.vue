@@ -25,7 +25,7 @@
             </view>
         </view>
     </view>
-    <searchPoint :func="{ ensurePublic, ensurePrivate }"/>
+    <searchPoint :func="{ ensurePublic, ensurePrivate, state }"/>
     <addPoint />
     <Tools :func="{ toggleTraffic, toggleEnableSatellite, isShow }" />
     <view class="myCheckbox">
