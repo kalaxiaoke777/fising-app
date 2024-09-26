@@ -9,8 +9,13 @@
             </picker>
         </view>
         <scroll-view
-            scroll-y
+            :refresher-enabled="state.refresherEnabled"
+            :refresher-threshold="5"
+            :refresher-triggered="state.isRefresher"
+            :scroll-y="true"
             @scrolltolower="loadMoreData"
+            @refresherrefresh="refresherrefresh"
+            @refresherpulling="refresherpulling"
             :style="{ height: '92vh' }"
             :upper-threshold="50"
             :lower-threshold="50"
@@ -29,20 +34,36 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, onUnmounted } from "vue";
+import { onMounted, ref, onUnmounted,reactive } from "vue";
 import { useCityStore } from "@/stores";
 import config from "../../../config"
 const {getFishList, API_BASE_URL} = config
-
+import ApiService from "../../utils/request";
 const cityStore = useCityStore();
+
+
+const state = reactive({
+    isRefresher: false,
+    refresherEnabled:true
+})
 const menuList = ref(['离你最近', '热度最高', '价格最低', '只看私人', '只看收藏']);
 const selectedMenu = ref('离你最近');
 const items = ref([]);
 const loading = ref(false);
 const hasMore = ref(true);
 const page = ref(1); // 当前的页码
-import ApiService from "../../utils/request";
 
+
+const refresherrefresh = (e:any) =>{
+    setTimeout(() => {
+        state.isRefresher = false;
+    }, 1000);
+    
+}
+const refresherpulling = (e:any) =>{
+    state.isRefresher = true;
+    
+}
 const onChange = (e: any) => {
     selectedMenu.value = menuList.value[e.detail.value];
     resetData(); // 重置数据
@@ -132,6 +153,9 @@ onMounted(() => {
 }
 .item {
     /* 你的item样式 */
+    background-color: rgb(0, 255, 136);
+    width: 100%;
+    height: 20%;
 }
 
 .loading {
