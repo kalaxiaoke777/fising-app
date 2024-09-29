@@ -21,7 +21,40 @@
             :lower-threshold="50"
         >
             <view v-for="item in items" :key="item.id" class="item">
-                {{ item.name }} <!-- 替换成你实际的数据展示 -->
+                <uni-section title="卡片+列表" type="line">
+                    <uni-card padding="0" spacing="0">
+                        <template v-slot:cover>
+                            <view class="custom-cover">
+                                <image
+                                    src="https://image.hnol.net/c/2015-05/04/11/20150504115230451-2285289.jpg"
+                                    class="cover-image" 
+                                    mode="aspectFill"
+                                />
+                                <view class="cover-content">
+                                    <text class="uni-subtitle uni-white">{{item.name}}</text>
+                                </view>
+                            </view>
+                        </template>
+                        <uni-list>
+                            <uni-list-item title="今日新闻" showArrow></uni-list-item>
+                            <uni-list-item title="今日新闻" showArrow></uni-list-item>
+                        </uni-list>
+                        <view slot="actions" class="card-actions no-border">
+                            <view class="card-actions-item" @click="actionsClick('分享')">
+                                <uni-icons type="pengyouquan" size="18" color="#999"></uni-icons>
+                                <text class="card-actions-item-text">分享</text>
+                            </view>
+                            <view class="card-actions-item" @click="actionsClick('点赞')">
+                                <uni-icons type="heart" size="18" color="#999"></uni-icons>
+                                <text class="card-actions-item-text">点赞</text>
+                            </view>
+                            <view class="card-actions-item" @click="actionsClick('评论')">
+                                <uni-icons type="chatbubble" size="18" color="#999"></uni-icons>
+                                <text class="card-actions-item-text">评论</text>
+                            </view>
+                        </view>
+                    </uni-card>
+                </uni-section>
             </view>
             <view v-if="loading" class="loading">
                 加载中...
@@ -42,6 +75,9 @@ import ApiService from "../../utils/request";
 const cityStore = useCityStore();
 
 
+const actionsClick = (e:any) =>{
+
+}
 const state = reactive({
     isRefresher: false,
     refresherEnabled:true
@@ -75,7 +111,7 @@ const loadMoreData = async () => {
     loading.value = true;
 
     try {
-        ApiService.get(getFishList, { "isPublic": 1 })
+        await ApiService.get(getFishList, { "isPublic": 1 })
             .then((response: any) => {
                 if (response) {
                     console.log(response);
@@ -151,11 +187,60 @@ onMounted(() => {
         }
     }
 }
-.item {
-    /* 你的item样式 */
-    background-color: rgb(0, 255, 136);
+.container {
     width: 100%;
     height: 20%;
+}
+
+.custom-cover {
+    flex: 1;
+    flex-direction: row;
+    position: relative;
+    .cover-image {
+        flex: 1;
+        background-size: cover;
+        width: 100%;
+        height: 150px;
+    }
+    .cover-content {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 40px;
+        background-color: rgba($color: #000000, $alpha: 0.4);
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding-left: 15px;
+        font-size: 14px;
+        color: #fff;
+    }
+}
+
+
+
+.card-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    height: 45px;
+    border-top: 1px #eee solid;
+}
+.card-actions-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.card-actions-item-text {
+    font-size: 12px;
+    color: #666;
+    margin-left: 5px;
+}
+
+.no-border {
+    border-width: 0;
 }
 
 .loading {
