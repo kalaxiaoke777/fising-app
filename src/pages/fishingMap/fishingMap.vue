@@ -5,13 +5,14 @@
                 <map enable-3D="true" :enable-overlooking="isShow.isOverlooking" :enable-traffic="isShow.isTraffic"
                     :enable-satellite="isShow.isEnableSatellite" @markertap="handleMarker"
                     style="width: 100%; height: 100vh" :latitude="coordinates[1]" :longitude="coordinates[0]"
-                    :scale="data.scale" :markers="data.publicMarkers" :show-location="true"
-                    :enable-indoorMap="true" @regionchange="regionchange">
+                    :scale="data.scale" :markers="data.publicMarkers" :show-location="true" :enable-indoorMap="true"
+                    @regionchange="regionchange">
                     <cover-view slot="callout">
                         <cover-view v-for="(item, index) in data.publicMarkers" :key="index">
                             <cover-view class="customCallout" :marker-id="item.id">
                                 <cover-view class="cover-view">钓点名称：{{ item.title }}</cover-view>
-                                <cover-view class="cover-view">钓点类型：{{ getPondTypeInChinese(item.pond_type)  }}</cover-view>
+                                <cover-view class="cover-view">钓点类型：{{ getPondTypeInChinese(item.pond_type)
+                                    }}</cover-view>
                                 <cover-view class="cover-view">价格：{{ item.price ? item.price : '0' }} 元/次</cover-view>
                                 <cover-view class="cover-view">鱼种：{{ fishList(item.fish_species) }}</cover-view>
                                 <cover-view class="cover-view">开门时间：{{ item.opening_time }}</cover-view>
@@ -25,22 +26,25 @@
             </view>
         </view>
     </view>
-    <searchPoint :func="{ ensurePublic, ensurePrivate, state }"/>
+    <searchPoint :func="{ ensurePublic, ensurePrivate, state }" />
     <addPoint />
     <Tools :func="{ toggleTraffic, toggleEnableSatellite, isShow }" />
     <view class="myCheckbox">
         <view>
             公开:
         </view>
-        <checkbox borderColor="red" color="red" style="transform:scale(0.9)" class="custom-checkbox" :checked="state.checkedPublic" @click="onChangePublic" ></checkbox>
+        <checkbox borderColor="red" color="red" style="transform:scale(0.9)" class="custom-checkbox"
+            :checked="state.checkedPublic" @click="onChangePublic"></checkbox>
         <view>
             私人:
         </view>
-        <checkbox borderColor="#a1d66a" color="blue" style="transform:scale(0.9)" class="custom-checkbox" :checked="state.checkedPrivate" @click="onChangePrivate"></checkbox>
+        <checkbox borderColor="#a1d66a" color="blue" style="transform:scale(0.9)" class="custom-checkbox"
+            :checked="state.checkedPrivate" @click="onChangePrivate"></checkbox>
         <view>
             收藏:
         </view>
-        <checkbox borderColor="#a1d66a" color="yellow" style="transform:scale(0.9)" :disabled="isFavoriteDisabled()" class="custom-checkbox" :checked="checkedFavorite()" @click="onChangeFavorite"></checkbox>
+        <checkbox borderColor="#a1d66a" color="yellow" style="transform:scale(0.9)" :disabled="isFavoriteDisabled()"
+            class="custom-checkbox" :checked="checkedFavorite()" @click="onChangeFavorite"></checkbox>
     </view>
 </template>
 
@@ -50,8 +54,16 @@ import searchPoint from "@/components/search/index.vue";
 import Tools from "@/components/tools/index.vue";
 import useMap from "../../hooks/useMap"
 
-const {data,coordinates,isShow,state,regionchange,ensurePublic,ensurePrivate,getPondTypeInChinese,onChangePublic,onChangePrivate,onChangeFavorite,toggleTraffic,toggleEnableSatellite,handleMarker,fishList,isFavoriteDisabled,checkedFavorite} = useMap(); 
-
+const { data, coordinates, isShow, state, regionchange, ensurePublic, ensurePrivate, getPondTypeInChinese, onChangePublic, onChangePrivate, onChangeFavorite, toggleTraffic, toggleEnableSatellite, handleMarker, fishList, isFavoriteDisabled, checkedFavorite } = useMap();
+import { onLoad , onShow} from "@dcloudio/uni-app";
+onLoad((options) => {
+    console.log(options);
+});
+onShow(() => {
+    let option = uni.getStorageSync('option');
+    ensurePublic(option.lon,option.lat,option.id)
+    console.log(option); // {id: 123, val: reLaunch}
+})
 </script>
 
 <style lang="scss" scoped>
@@ -82,7 +94,7 @@ $max-width: 400px; // 最大宽度
 
 
 .customCallout {
-    background-color: rgba(255, 192, 203,0.85);
+    background-color: rgba(255, 192, 203, 0.85);
     border: 2px solid $border-color; // 更厚的边框
     border-radius: $border-radius;
     padding: $padding;
@@ -90,10 +102,10 @@ $max-width: 400px; // 最大宽度
     font-family: 'Roboto', sans-serif; // 更现代的字体
     max-width: $max-width;
 
-    .view{
+    .view {
         width: 32px;
         height: 32px;
-        position:  absolute;
+        position: absolute;
         right: 10px;
         top: 2px;
         z-index: 999929;

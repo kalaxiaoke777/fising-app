@@ -44,6 +44,12 @@
 			"style": {
 				"navigationBarTitleText": "添加标点"
 			}
+		},
+		{
+			"path": "pages/fishingSpot/index",
+			"style": {
+				"navigationBarTitleText": "添加标点"
+			}
 		}
 	],
 	"globalStyle": {

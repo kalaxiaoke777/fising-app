@@ -40,17 +40,17 @@
                             <uni-list-item title="今日新闻" showArrow></uni-list-item>
                         </uni-list>
                         <view slot="actions" class="card-actions no-border">
-                            <view class="card-actions-item" @click="actionsClick('分享')">
-                                <uni-icons type="pengyouquan" size="18" color="#999"></uni-icons>
-                                <text class="card-actions-item-text">分享</text>
+                            <view class="card-actions-item" @click="location({id:item.pond_id,longitude:item.longitude,latitude:item.latitude})">
+                                <uni-icons type="location" size="18" color="#999"></uni-icons>
+                                <text class="card-actions-item-text">位置</text>
                             </view>
-                            <view class="card-actions-item" @click="actionsClick('点赞')">
+                            <view class="card-actions-item" @click="actionsClick('收藏')">
                                 <uni-icons type="heart" size="18" color="#999"></uni-icons>
-                                <text class="card-actions-item-text">点赞</text>
+                                <text class="card-actions-item-text">收藏</text>
                             </view>
-                            <view class="card-actions-item" @click="actionsClick('评论')">
-                                <uni-icons type="chatbubble" size="18" color="#999"></uni-icons>
-                                <text class="card-actions-item-text">评论</text>
+                            <view class="card-actions-item" @click="detile(item.pond_id)">
+                                <uni-icons type="more" size="18" color="#999"></uni-icons>
+                                <text class="card-actions-item-text">详情</text>
                             </view>
                         </view>
                     </uni-card>
@@ -77,6 +77,17 @@ const cityStore = useCityStore();
 
 const actionsClick = (e:any) =>{
 
+}
+const detile = (id:any) =>{    
+    uni.redirectTo({
+        url: `/pages/fishingSpot/index?id=${id}`
+    })
+}
+const location = (opt:{id:number,longitude:number,latitude:number}) =>{ 
+    uni.setStorageSync('option',{id:opt.id, lon:opt.longitude, lat:opt.latitude,})   
+    uni.switchTab({
+        url: `/pages/fishingMap/fishingMap`
+    })
 }
 const state = reactive({
     isRefresher: false,
@@ -165,7 +176,7 @@ onMounted(() => {
 .top_bar {
     position: relative;
     height: 8vh;
-    background-color: red;
+    background-color: rgba(18, 123, 77, 0.6);
 
     .top_bar_city {
         color: black;

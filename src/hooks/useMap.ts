@@ -256,9 +256,7 @@ const useMap = () => {
             
         }
         data.value.scale = 16
-        coordinates.value = [lon,lat];
-        console.log(245,coordinates.value);
-        
+        coordinates.value = [lon,lat];        
     }
     const ensurePrivate = (lon:number,lat:number,id:number) =>{
         const openid = getOpenid()
