@@ -4,8 +4,8 @@ import { useRegisterStore } from '../stores/index';
 import { useCityStore } from "@/stores";
 import ApiService from "@/utils/request";
 import config from "../../config";
-
-const { API_BASE_URL, getFish, searchFish } = config;
+import { onShow } from "@dcloudio/uni-app";
+const { getFish, searchFish } = config;
 const registerStore = useRegisterStore();
 
 const English_to_chinese: { [key: string]: string } = {
@@ -192,7 +192,15 @@ const useMap = () => {
 
     onMounted(() => {
         renderFish(getFish, { "isPublic": state.checkedPublic ? 1 : 0 }, false);
+        
     });
+    onShow(() => {
+        let option = uni.getStorageSync('option');
+        ensurePublic(option.lon, option.lat, option.id)
+        uni.removeStorageSync('option');
+        
+    
+    })
 
     onBeforeMount(() => {
         const cityStore = useCityStore();
@@ -208,6 +216,9 @@ const useMap = () => {
                         coordinates.value[0] = res.longitude;
                         state.onloadLocation = [res.longitude,res.latitude]
                         data.value.scale = 15;
+                        console.log(195,coordinates.value);
+        
+                        addFish()
                     },
                     fail: () => {
                         coordinates.value = [104.0431035344202, 30.642415269320068];
@@ -226,6 +237,7 @@ const useMap = () => {
                 });
             }
         });
+
     });
     const fishList = (fish: string[]): string => {
         return fish.join(', ');
@@ -285,6 +297,48 @@ const useMap = () => {
         }
         
     }
+    const addFish = () => {
+        const maps = uni.createMapContext('map', this)
+        const markers = [
+            {
+                id: 1,
+                latitude: coordinates.value[1],
+                longitude: coordinates.value[0],
+                iconPath: '../../static/fishing/favorite.png',
+                width: 50,
+                height: 50,
+                label: {
+                    width: 50,
+                    height: 30,
+                    borderWidth: 1,
+                    borderRadius: 10,
+                    bgColor: '#ffffff',
+                    content: `label 1`
+                }
+            }
+
+        ]
+        maps.initMarkerCluster({
+            enableDefaultStyle: false,
+            zoomOnClick: true,
+            gridSize: 60,
+            complete(res) {
+                console.log('initMarkerCluster', res)
+            }
+        });
+
+        maps.on("markerClusterCreate", (e) => {
+            console.log("markerClusterCreate", e);
+        });
+        maps.addMarkers({
+            markers,
+            clear: false,
+            complete(res) {
+                console.log('addMarkers', res)
+            }
+        })
+        console.log(maps);
+    }
 
 
     return {
@@ -306,7 +360,8 @@ const useMap = () => {
         getPondTypeInChinese,
         fishList,
         handleFavorite,
-        isFavoriteDisabled
+        isFavoriteDisabled,
+        addFish
     };
 };
 

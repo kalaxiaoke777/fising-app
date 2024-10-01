@@ -2,11 +2,11 @@
     <view>
         <view class="page-body">
             <view class="page-section page-section-gap">
-                <map enable-3D="true" :enable-overlooking="isShow.isOverlooking" :enable-traffic="isShow.isTraffic"
-                    :enable-satellite="isShow.isEnableSatellite" @markertap="handleMarker"
-                    style="width: 100%; height: 100vh" :latitude="coordinates[1]" :longitude="coordinates[0]"
-                    :scale="data.scale" :markers="data.publicMarkers" :show-location="true" :enable-indoorMap="true"
-                    @regionchange="regionchange">
+                <map id="map" enable-3D="true" :enable-overlooking="isShow.isOverlooking"
+                    :enable-traffic="isShow.isTraffic" :enable-satellite="isShow.isEnableSatellite"
+                    @markertap="handleMarker" style="width: 100%; height: 100vh" :latitude="coordinates[1]"
+                    :longitude="coordinates[0]" :scale="data.scale" :markers="data.publicMarkers" :show-location="true"
+                    :enable-indoorMap="true" @regionchange="regionchange">
                     <cover-view slot="callout">
                         <cover-view v-for="(item, index) in data.publicMarkers" :key="index">
                             <cover-view class="customCallout" :marker-id="item.id">
@@ -27,7 +27,7 @@
         </view>
     </view>
     <searchPoint :func="{ ensurePublic, ensurePrivate, state }" />
-    <addPoint />
+    <addPoint :func="{ addFish }" />
     <Tools :func="{ toggleTraffic, toggleEnableSatellite, isShow }" />
     <view class="myCheckbox">
         <view>
@@ -54,16 +54,8 @@ import searchPoint from "@/components/search/index.vue";
 import Tools from "@/components/tools/index.vue";
 import useMap from "../../hooks/useMap"
 
-const { data, coordinates, isShow, state, regionchange, ensurePublic, ensurePrivate, getPondTypeInChinese, onChangePublic, onChangePrivate, onChangeFavorite, toggleTraffic, toggleEnableSatellite, handleMarker, fishList, isFavoriteDisabled, checkedFavorite } = useMap();
-import { onLoad , onShow} from "@dcloudio/uni-app";
-onLoad((options) => {
-    console.log(options);
-});
-onShow(() => {
-    let option = uni.getStorageSync('option');
-    ensurePublic(option.lon,option.lat,option.id)
-    console.log(option); // {id: 123, val: reLaunch}
-})
+const { data, coordinates, isShow, state,addFish, regionchange, ensurePublic, ensurePrivate, getPondTypeInChinese, onChangePublic, onChangePrivate, onChangeFavorite, toggleTraffic, toggleEnableSatellite, handleMarker, fishList, isFavoriteDisabled, checkedFavorite } = useMap();
+
 </script>
 
 <style lang="scss" scoped>

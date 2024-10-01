@@ -196,6 +196,11 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
 .drz{
 	display: inline-block;
 	width: 17vw;
@@ -208,17 +213,14 @@ onMounted(() => {
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	height: 100vh;
-	width: 100vw;
+	margin: 0; /* 去掉默认的边距 */
+    padding: 20px; /* 设置内容的内边距 */
+    min-height: 100vh; /* 确保页面至少有 100vh 的高度 */
 	font-size: 16px;
 	background-image: linear-gradient(120deg, #fccb90 0%, #d57eeb 100%);
 	background-size: cover;
-	box-sizing: border-box;
 	.myForm {
-		display: flex;
-		justify-content: center;
-		width: 100vw;
-		height: 100vh;
+		flex-grow: 1;
 		background: rgba(255, 255, 255, 0.1);
 		backdrop-filter: blur(6px);
 		color: rgba(124, 0, 13, 1);
@@ -246,7 +248,7 @@ onMounted(() => {
 			padding-top: 20px;
 			.myText{
 				display: inline-block;
-				width: 17vw;
+				width: 23vw;
                 text-align: left;
                 padding-left: 14px;			
 			}
