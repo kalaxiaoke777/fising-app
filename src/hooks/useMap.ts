@@ -37,7 +37,16 @@ const useMap = () => {
         checkedPublic: true,
         checkedPrivate: false,
         checkedFavorite: false,
-        onloadLocation:[0,0]
+        onloadLocation:[0,0],
+        fishState:{
+            name:'',
+            number: '',
+            poundType: "",
+            price: "",
+            slider: "",
+            type: "",
+            fishType:[]
+        }
     });
 
     const getOpenid = () => {
@@ -215,9 +224,7 @@ const useMap = () => {
                         coordinates.value[1] = res.latitude;
                         coordinates.value[0] = res.longitude;
                         state.onloadLocation = [res.longitude,res.latitude]
-                        data.value.scale = 15;
-                        console.log(195,coordinates.value);
-        
+                        data.value.scale = 15;    
                         addFish()
                     },
                     fail: () => {
@@ -297,7 +304,13 @@ const useMap = () => {
         }
         
     }
-    const addFish = () => {
+    const addFishState = () => {
+        console.log(data);
+    }
+    const addFish = (data:any) => {
+        debugger
+        console.log(312, data);
+        
         const maps = uni.createMapContext('map', this)
         const markers = [
             {
@@ -361,7 +374,8 @@ const useMap = () => {
         fishList,
         handleFavorite,
         isFavoriteDisabled,
-        addFish
+        addFish,
+        addFishState
     };
 };
 
