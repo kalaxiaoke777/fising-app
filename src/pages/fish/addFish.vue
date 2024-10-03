@@ -112,7 +112,7 @@ const image_url = ref(`${API_BASE_URL}/static/fish.png`);
 const data = ref([{}])
 const RefChild = ref()
 const fishType = ref()
-const discribe = ref()
+const description = ref()
 
 interface ToolsProps {
 	func: any
@@ -128,10 +128,10 @@ const change = (e: any) => {
 	fishType.value = e
 }
 const formDataText = (): string => {
-	return JSON.stringify(discribe.value)
+	return JSON.stringify(description.value)
 }
 const inputText = (v: any) => {
-	discribe.value = v.detail.value
+	description.value = v.detail.value
 }
 const selectTable = () => {
 	if (RefChild.value) {
@@ -207,8 +207,10 @@ const formSubmit = (v: any) => {
 		startTime: state.startTime,
 		endTime: state.endTime,
 	}
-
-	props.func.addFish(data)
+	uni.$emit('addFish', data)
+	uni.navigateBack({ // 返回上一页
+		delta: 1,
+	})
 }
 const formReset = () => {
 	updateStartTime('09:00')

@@ -1,5 +1,5 @@
 // useMap.ts
-import { ref, reactive, onMounted, onBeforeMount } from 'vue';
+import { ref, reactive, onMounted, onBeforeMount,onBeforeUnmount } from 'vue';
 import { useRegisterStore } from '../stores/index';
 import { useCityStore } from "@/stores";
 import ApiService from "@/utils/request";
@@ -20,7 +20,7 @@ const useMap = () => {
         scale: 14,
         publicMarkers: [],
         privateMarkers: [],
-        
+
     });
     const getPondTypeInChinese = (pond_type: string): string => {
         return English_to_chinese[pond_type] || '未知类型';
@@ -37,15 +37,16 @@ const useMap = () => {
         checkedPublic: true,
         checkedPrivate: false,
         checkedFavorite: false,
-        onloadLocation:[0,0],
-        fishState:{
-            name:'',
+        _addFish:false,
+        onloadLocation: [0, 0],
+        fishState: {
+            name: '',
             number: '',
             poundType: "",
             price: "",
             slider: "",
             type: "",
-            fishType:[]
+            fishType: []
         }
     });
 
@@ -113,7 +114,7 @@ const useMap = () => {
     }
     const handleFavorite = (pond_id: string) => {
         const openid = getOpenid();
-        if(!openid){
+        if (!openid) {
             return;
         }
         favortite({ user: openid, fishing_pond: pond_id, favortite: true });
@@ -154,8 +155,8 @@ const useMap = () => {
 
     const onChangePrivate = (e: any) => {
         let openid = getOpenid();
-        
-        if(!openid){
+
+        if (!openid) {
             state.checkedPrivate = false
             return;
         }
@@ -170,7 +171,7 @@ const useMap = () => {
     const onChangeFavorite = () => {
         let openid = getOpenid();
         state.checkedFavorite = !state.checkedFavorite;
-        if(!openid){
+        if (!openid) {
             return;
         }
         if (state.checkedFavorite) {
@@ -201,20 +202,21 @@ const useMap = () => {
 
     onMounted(() => {
         renderFish(getFish, { "isPublic": state.checkedPublic ? 1 : 0 }, false);
-        
+        uni.$on('addFish', (data) => {
+            console.log(205, data);
+
+            addFish(data)
+        })
+
     });
     onShow(() => {
         let option = uni.getStorageSync('option');
         ensurePublic(option.lon, option.lat, option.id)
         uni.removeStorageSync('option');
-        
-    
+
+
     })
-
-    onBeforeMount(() => {
-        const cityStore = useCityStore();
-        cityStore.setCityName("成都");
-
+    const getLocation = () => {
         uni.authorize({
             scope: 'scope.userLocation',
             success() {
@@ -223,13 +225,12 @@ const useMap = () => {
                     success: (res) => {
                         coordinates.value[1] = res.latitude;
                         coordinates.value[0] = res.longitude;
-                        state.onloadLocation = [res.longitude,res.latitude]
-                        data.value.scale = 15;    
-                        addFish()
+                        state.onloadLocation = [res.longitude, res.latitude];
+                        data.value.scale = 15;
                     },
                     fail: () => {
                         coordinates.value = [104.0431035344202, 30.642415269320068];
-                        state.onloadLocation = [104.0431035344202, 30.642415269320068]
+                        state.onloadLocation = [104.0431035344202, 30.642415269320068];
                         uni.showToast({
                             title: '无法获取地理位置',
                             icon: 'none'
@@ -244,8 +245,18 @@ const useMap = () => {
                 });
             }
         });
+    };
+    onBeforeMount(() => {
+        const cityStore = useCityStore();
+        cityStore.setCityName("成都");
+        getLocation();
+        const intervalId = setInterval(getLocation, 60000); // 60000ms = 60s
+        onBeforeUnmount(() => {
+            clearInterval(intervalId);
+        });
 
     });
+
     const fishList = (fish: string[]): string => {
         return fish.join(', ');
     };
@@ -260,97 +271,86 @@ const useMap = () => {
             return false;
         }
     };
-    const ensurePublic = (lon:number,lat:number,id:number) =>{
+    const ensurePublic = (lon: number, lat: number, id: number) => {
         if (state.checkedPublic === false) {
             state.checkedPublic = true;
             renderFish(getFish, { "isPublic": 1 }, false);
         }
-        let targetItem:any = data.value.publicMarkers.find((item:any) => item.id === id);
+        let targetItem: any = data.value.publicMarkers.find((item: any) => item.id === id);
         if (targetItem) {
             let iconPath = targetItem.iconPath
             targetItem.iconPath = "../../static/fishing/icon.png"
             setTimeout(() => {
                 targetItem.iconPath = iconPath
             }, 900);
-            
+
         }
         data.value.scale = 16
-        coordinates.value = [lon,lat];        
+        coordinates.value = [lon, lat];
     }
-    const ensurePrivate = (lon:number,lat:number,id:number) =>{
+    const ensurePrivate = (lon: number, lat: number, id: number) => {
         const openid = getOpenid()
-        if(!openid){
+        if (!openid) {
             return;
         }
         if (state.checkedPrivate === false) {
             state.checkedPrivate = true;
             renderFish(getFish, { "isPublic": 0, "openid": openid }, false);
         }
-        let targetItem:any = data.value.publicMarkers.find((item:any) => item.id == id);
+        let targetItem: any = data.value.publicMarkers.find((item: any) => item.id == id);
         if (targetItem) {
             let iconPath = targetItem.iconPath
             targetItem.iconPath = "../../static/fishing/icon.png"
             setTimeout(() => {
                 targetItem.iconPath = iconPath
             }, 900);
-            
+
         }
         data.value.scale = 16
-        coordinates.value = [lon,lat];
+        coordinates.value = [lon, lat];
     }
-    const regionchange = (e:any) => {
-        if(e.type === "end"){
-            coordinates.value = [e.target.centerLocation.longitude,e.target.centerLocation.latitude];
+    const regionchange = (e: any) => {
+        if (e.type === "end") {
+            coordinates.value = [e.target.centerLocation.longitude, e.target.centerLocation.latitude];
         }
-        
+
     }
     const addFishState = () => {
         console.log(data);
     }
-    const addFish = (data:any) => {
-        debugger
-        console.log(312, data);
-        
+    const addFish = (_data: any) => {
+        console.log(312, _data);
+
         const maps = uni.createMapContext('map', this)
-        const markers = [
-            {
-                id: 1,
-                latitude: coordinates.value[1],
-                longitude: coordinates.value[0],
-                iconPath: '../../static/fishing/favorite.png',
-                width: 50,
-                height: 50,
-                label: {
-                    width: 50,
-                    height: 30,
-                    borderWidth: 1,
-                    borderRadius: 10,
-                    bgColor: '#ffffff',
-                    content: `label 1`
-                }
+        const markers =
+        {
+            id: 19,
+            latitude: coordinates.value[1],
+            longitude: coordinates.value[0],
+            iconPath: _data.type === "public" ? "../../static/fishing/private.png" : "../../static/fishing/public.png",
+            width: 32,
+            height: 32,
+            title: _data.name,
+            description: _data.text,
+            rating: _data.slider,
+            price: _data.price,
+            pond_type: _data.fishType === undefined ? [] : _data.fishType,
+            phone_number: _data.number,
+            opening_time: _data.startTime,
+            closing_time: _data.endTime,
+            fish_species: _data.fishType,
+            is_public: _data.type === "public" ? true : "../../static/fishing/private.png",
+            is_favorite: false,
+            customCallout: {
+                anchorY: 0,
+                anchorX: 1,
+                display: "BYCLICK"
             }
-
-        ]
-        maps.initMarkerCluster({
-            enableDefaultStyle: false,
-            zoomOnClick: true,
-            gridSize: 60,
-            complete(res) {
-                console.log('initMarkerCluster', res)
-            }
-        });
-
-        maps.on("markerClusterCreate", (e) => {
-            console.log("markerClusterCreate", e);
-        });
-        maps.addMarkers({
-            markers,
-            clear: false,
-            complete(res) {
-                console.log('addMarkers', res)
-            }
-        })
-        console.log(maps);
+        }
+        console.log(336,markers,data.value.publicMarkers);
+        state._addFish = true
+        data.value.publicMarkers.push(markers)
+        
     }
 
 

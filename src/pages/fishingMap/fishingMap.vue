@@ -46,6 +46,11 @@
         <checkbox borderColor="#a1d66a" color="yellow" style="transform:scale(0.9)" :disabled="isFavoriteDisabled()"
             class="custom-checkbox" :checked="checkedFavorite()" @click="onChangeFavorite"></checkbox>
     </view>
+    <view class="addFish" v-if="state._addFish">
+        请滑动屏幕确认点位！
+        <button size="mini" type="primary" class="btn">确定</button>
+        <button size="mini" type="default" class="btn">取消</button>
+    </view>
 </template>
 
 <script lang="ts" setup>
@@ -82,6 +87,27 @@ $max-width: 400px; // 最大宽度
     padding: 5px;
     border-radius: 2px solid rgba(230, 230, 9, 0.85);
     background-color: rgba(247, 186, 142, 0.8);
+}
+
+.addFish {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    width: 80%;
+    height: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 20%;
+    padding: 5px;
+    border-radius: 2px solid rgba(230, 230, 9, 0.85);
+    background-color: rgba(247, 186, 142, 0.8);
+    .btn{
+        font-size: 12px;
+        // width: 50px;
+        // height: 25px;
+    }
 }
 
 
