@@ -48,8 +48,8 @@
     </view>
     <view class="addFish" v-if="state._addFish">
         请滑动屏幕确认点位！
-        <button size="mini" type="primary" class="btn">确定</button>
-        <button size="mini" type="default" class="btn">取消</button>
+        <button size="mini" type="primary" class="btn" @click="handleAddFish">确定</button>
+        <button size="mini" type="default" class="btn" @click="cancelAddFish">取消</button>
     </view>
 </template>
 
@@ -59,7 +59,7 @@ import searchPoint from "@/components/search/index.vue";
 import Tools from "@/components/tools/index.vue";
 import useMap from "../../hooks/useMap"
 
-const { data, coordinates, isShow, state,addFishState,addFish, regionchange, ensurePublic, ensurePrivate, getPondTypeInChinese, onChangePublic, onChangePrivate, onChangeFavorite, toggleTraffic, toggleEnableSatellite, handleMarker, fishList, isFavoriteDisabled, checkedFavorite } = useMap();
+const { data, coordinates, isShow, state,handleAddFish,cancelAddFish,addFishState,addFish, regionchange, ensurePublic, ensurePrivate, getPondTypeInChinese, onChangePublic, onChangePrivate, onChangeFavorite, toggleTraffic, toggleEnableSatellite, handleMarker, fishList, isFavoriteDisabled, checkedFavorite } = useMap();
 
 </script>
 

@@ -15,6 +15,16 @@ const English_to_chinese: { [key: string]: string } = {
     happy: "欢乐"
 };
 
+function createUUID() {
+    var dt = new Date().getTime();
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = (dt + Math.random()*16)%16 | 0;
+        dt = Math.floor(dt/16);
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+    return uuid;
+}
+
 const useMap = () => {
     const data = ref({
         scale: 14,
@@ -39,6 +49,7 @@ const useMap = () => {
         checkedFavorite: false,
         _addFish:false,
         onloadLocation: [0, 0],
+        addMarker:{},
         fishState: {
             name: '',
             number: '',
@@ -311,34 +322,41 @@ const useMap = () => {
     }
     const regionchange = (e: any) => {
         if (e.type === "end") {
+            if (Object.keys(state.addMarker).length !== 0) {
+                let targetItem: any = data.value.publicMarkers.find((item: any) => item.id == state.addMarker.id);
+                targetItem.longitude = e.target.centerLocation.longitude
+                targetItem.latitude = e.target.centerLocation.latitude;
+                state.addMarker.longitude = e.target.centerLocation.longitude           
+                state.addMarker.latitude = e.target.centerLocation.latitude           
+            }
             coordinates.value = [e.target.centerLocation.longitude, e.target.centerLocation.latitude];
         }
+
 
     }
     const addFishState = () => {
         console.log(data);
     }
     const addFish = (_data: any) => {
-        console.log(312, _data);
-
+        var uuid = createUUID();
         const maps = uni.createMapContext('map', this)
         const markers =
         {
-            id: 19,
+            id: uuid,
             latitude: coordinates.value[1],
             longitude: coordinates.value[0],
-            iconPath: _data.type === "public" ? "../../static/fishing/private.png" : "../../static/fishing/public.png",
+            iconPath: _data.type === "public" ? "../../static/fishing/public.png" : "../../static/fishing/private.png",
             width: 32,
             height: 32,
             title: _data.name,
             description: _data.text,
             rating: _data.slider,
             price: _data.price,
-            pond_type: _data.fishType === undefined ? [] : _data.fishType,
+            pond_type: _data.poundType,
             phone_number: _data.number,
             opening_time: _data.startTime,
             closing_time: _data.endTime,
-            fish_species: _data.fishType,
+            fish_species: _data.fishType === undefined ? [] : _data.fishType,
             is_public: _data.type === "public" ? true : "../../static/fishing/private.png",
             is_favorite: false,
             customCallout: {
@@ -347,18 +365,31 @@ const useMap = () => {
                 display: "BYCLICK"
             }
         }
-        console.log(336,markers,data.value.publicMarkers);
+        
+        
+        state.addMarker = markers
         state._addFish = true
+        console.log(359,state.addMarker);
         data.value.publicMarkers.push(markers)
+    }
+    const handleAddFish = () => {
+        console.log("addFish",state.addMarker);
+        // 回调成功则关闭
+        state._addFish = false
         
     }
-
+    const cancelAddFish = () => {
+        state._addFish = false
+        data.value.publicMarkers.pop()
+    }
 
     return {
         data,
         coordinates,
         isShow,
         state,
+        handleAddFish,
+        cancelAddFish,
         regionchange,
         ensurePublic,
         ensurePrivate,
