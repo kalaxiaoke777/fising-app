@@ -21,40 +21,38 @@
             :lower-threshold="50"
         >
             <view v-for="item in items" :key="item.id" class="item">
-                <uni-section title="卡片+列表" type="line">
-                    <uni-card padding="0" spacing="0">
-                        <template v-slot:cover>
-                            <view class="custom-cover">
-                                <image
-                                    src="https://p1.itc.cn/q_70/images03/20231031/a152de60b36a41159767457b406d2e98.png"
-                                    class="cover-image" 
-                                    mode="aspectFill"
-                                />
-                                <view class="cover-content">
-                                    <text class="uni-subtitle uni-white">{{item.name}}</text>
-                                </view>
-                            </view>
-                        </template>
-                        <uni-list>
-                            <uni-list-item title="今日新闻" showArrow></uni-list-item>
-                            <uni-list-item title="今日新闻" showArrow></uni-list-item>
-                        </uni-list>
-                        <view slot="actions" class="card-actions no-border">
-                            <view class="card-actions-item" @click="location({id:item.pond_id,longitude:item.longitude,latitude:item.latitude})">
-                                <uni-icons type="location" size="18" color="#999"></uni-icons>
-                                <text class="card-actions-item-text">位置</text>
-                            </view>
-                            <view class="card-actions-item" @click="actionsClick('收藏')">
-                                <uni-icons type="heart" size="18" color="#999"></uni-icons>
-                                <text class="card-actions-item-text">收藏</text>
-                            </view>
-                            <view class="card-actions-item" @click="detile(item.uuid,item.is_public)">
-                                <uni-icons type="more" size="18" color="#999"></uni-icons>
-                                <text class="card-actions-item-text">详情</text>
+                <uni-card padding="0" spacing="0">
+                    <template v-slot:cover>
+                        <view class="custom-cover">
+                            <image
+                                src="https://p1.itc.cn/q_70/images03/20231031/a152de60b36a41159767457b406d2e98.png"
+                                class="cover-image" 
+                                mode="aspectFill"
+                            />
+                            <view class="cover-content">
+                                <text class="uni-subtitle uni-white">{{item.name}}</text>
                             </view>
                         </view>
-                    </uni-card>
-                </uni-section>
+                    </template>
+                    <uni-list>
+                        <uni-list-item title="今日新闻" showArrow></uni-list-item>
+                        <uni-list-item title="今日新闻" showArrow></uni-list-item>
+                    </uni-list>
+                    <view slot="actions" class="card-actions no-border">
+                        <view class="card-actions-item" @click="location({id:item.pond_id,longitude:item.longitude,latitude:item.latitude})">
+                            <uni-icons type="location" size="18" color="#999"></uni-icons>
+                            <text class="card-actions-item-text">位置</text>
+                        </view>
+                        <view class="card-actions-item" @click="actionsClick('收藏')">
+                            <uni-icons type="heart" size="18" color="#999"></uni-icons>
+                            <text class="card-actions-item-text">收藏</text>
+                        </view>
+                        <view class="card-actions-item" @click="detile(item.uuid,item.is_public)">
+                            <uni-icons type="more" size="18" color="#999"></uni-icons>
+                            <text class="card-actions-item-text">详情</text>
+                        </view>
+                    </view>
+                </uni-card>
             </view>
             <view v-if="loading" class="loading">
                 加载中...
