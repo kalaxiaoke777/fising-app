@@ -5,7 +5,7 @@ import { useCityStore } from "@/stores";
 import ApiService from "@/utils/request";
 import config from "../../config";
 import { onShow } from "@dcloudio/uni-app";
-const { getFish, searchFish } = config;
+const { getFish, searchFish, addFishURL } = config;
 const registerStore = useRegisterStore();
 
 const English_to_chinese: { [key: string]: string } = {
@@ -261,7 +261,7 @@ const useMap = () => {
         const cityStore = useCityStore();
         cityStore.setCityName("成都");
         getLocation();
-        const intervalId = setInterval(getLocation, 60000); // 60000ms = 60s
+        const intervalId = setInterval(getLocation, 120000); // 60000ms = 60s
         onBeforeUnmount(() => {
             clearInterval(intervalId);
         });
@@ -339,10 +339,14 @@ const useMap = () => {
     }
     const addFish = (_data: any) => {
         var uuid = createUUID();
+        
         const maps = uni.createMapContext('map', this)
+
         const markers =
         {
             id: uuid,
+            uuid: uuid,
+            user_id:'',
             latitude: coordinates.value[1],
             longitude: coordinates.value[0],
             iconPath: _data.type === "public" ? "../../static/fishing/public.png" : "../../static/fishing/private.png",
@@ -357,25 +361,56 @@ const useMap = () => {
             opening_time: _data.startTime,
             closing_time: _data.endTime,
             fish_species: _data.fishType === undefined ? [] : _data.fishType,
-            is_public: _data.type === "public" ? true : "../../static/fishing/private.png",
+            is_public: _data.type === "public" ? true : false,
             is_favorite: false,
             customCallout: {
                 anchorY: 0,
                 anchorX: 1,
                 display: "BYCLICK"
-            }
+            },
         }
-        
-        
         state.addMarker = markers
+        console.log(343,state.addMarker);
         state._addFish = true
-        console.log(359,state.addMarker);
+
         data.value.publicMarkers.push(markers)
     }
-    const handleAddFish = () => {
-        console.log("addFish",state.addMarker);
-        // 回调成功则关闭
-        state._addFish = false
+    const handleAddFish = async () => {
+        const openid:string = getOpenid()
+        let fish:any = state.addMarker
+        if (!fish.is_public) {
+            fish.user_id = openid
+        }
+        fish.location = {
+            "type": "Point",
+            "coordinates": [fish.longitude, fish.latitude]           
+        }
+        fish.fish_species = [...new Set(fish.fish_species.map((item:any) => item.value))];
+        await ApiService.post(addFishURL, fish)
+        .then((response: any) => {
+            const locations = response.data;
+            if (response.code === 200) {
+                uni.showToast({
+                    title: '添加成功',
+                    icon:'success'
+                });
+                state._addFish = false
+            }else{
+                uni.showToast({
+                    title: '添加失败',
+                    icon: 'none'
+                });
+                state._addFish = false
+            }
+
+        })
+        .catch(error => {
+            uni.showToast({
+                title: error,
+                icon: 'none'
+            });
+            state._addFish = false
+        });
         
     }
     const cancelAddFish = () => {
