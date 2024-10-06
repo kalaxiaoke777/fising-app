@@ -26,7 +26,7 @@
                         <template v-slot:cover>
                             <view class="custom-cover">
                                 <image
-                                    src="https://image.hnol.net/c/2015-05/04/11/20150504115230451-2285289.jpg"
+                                    src="https://p1.itc.cn/q_70/images03/20231031/a152de60b36a41159767457b406d2e98.png"
                                     class="cover-image" 
                                     mode="aspectFill"
                                 />
@@ -48,7 +48,7 @@
                                 <uni-icons type="heart" size="18" color="#999"></uni-icons>
                                 <text class="card-actions-item-text">收藏</text>
                             </view>
-                            <view class="card-actions-item" @click="detile(item.pond_id)">
+                            <view class="card-actions-item" @click="detile(item.uuid,item.is_public)">
                                 <uni-icons type="more" size="18" color="#999"></uni-icons>
                                 <text class="card-actions-item-text">详情</text>
                             </view>
@@ -78,9 +78,9 @@ const cityStore = useCityStore();
 const actionsClick = (e:any) =>{
 
 }
-const detile = (id:any) =>{    
-    uni.redirectTo({
-        url: `/pages/fishingSpot/index?id=${id}`
+const detile = (id:string,is_public:boolean) =>{    
+    uni.navigateTo({
+        url: `/pages/fishingSpot/index?id=${id}&is_public=${is_public}`
     })
 }
 const location = (opt:{id:number,longitude:number,latitude:number}) =>{ 

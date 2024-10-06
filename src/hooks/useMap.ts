@@ -4,6 +4,7 @@ import { useRegisterStore } from '../stores/index';
 import { useCityStore } from "@/stores";
 import ApiService from "@/utils/request";
 import config from "../../config";
+import {getOpenid, createUUID} from "@/utils/tools";
 import { onShow } from "@dcloudio/uni-app";
 const { getFish, searchFish, addFishURL } = config;
 const registerStore = useRegisterStore();
@@ -14,16 +15,6 @@ const English_to_chinese: { [key: string]: string } = {
     natural: "天然",
     happy: "欢乐"
 };
-
-function createUUID() {
-    var dt = new Date().getTime();
-    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = (dt + Math.random()*16)%16 | 0;
-        dt = Math.floor(dt/16);
-        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-    });
-    return uuid;
-}
 
 const useMap = () => {
     const data = ref({
@@ -61,30 +52,12 @@ const useMap = () => {
         }
     });
 
-    const getOpenid = () => {
-        const register = uni.getStorageSync('register');
-        if (!register) {
 
-            uni.switchTab({
-                url: '/pages/my/my'
-            })
-            uni.showModal({
-                title: '提示',
-                content: '请先登录',
-                showCancel: false,
-            });
-            return null;
-        }
-        try {
-            return JSON.parse(register || '{}').openid;
-        } catch (e) {
-            return null;
-        }
-    };
 
     const transformData = (locations: any) => {
-        return locations.map((location: { pond_id: any; latitude: any; longitude: any; is_public: any; name: any; description: any; rating: any; price: any; pond_type: any; phone_number: any; opening_time: any; closing_time: any; fish_species: any; is_favorite: any }) => ({
+        return locations.map((location: { pond_id: any; latitude: any; longitude: any; is_public: any; name: any; description: any; rating: any; price: any; pond_type: any; phone_number: any; opening_time: any; closing_time: any; fish_species: any; is_favorite: any,uuid:string }) => ({
             id: location.pond_id,
+            uuid: location.uuid,
             latitude: location.latitude,
             longitude: location.longitude,
             iconPath: location.is_public ? "../../static/fishing/public.png" : "../../static/fishing/private.png",

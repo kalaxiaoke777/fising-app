@@ -6,6 +6,7 @@ const config = {
     weRegister: '/user_management/wechat/register/', // 登录验证
     getFish: '/fish/getFish', // 登录验证
     getFishList: '/fish/getFishList', // 分页
+    getFishSingle: '/fish/getFishSingle', // 分页
     searchFish: '/fish/searchFish', // 登录验证
     addFishURL: '/fish/addFish/', // 登录验证
 };
