@@ -368,6 +368,7 @@ const useMap = () => {
                     icon:'success'
                 });
                 state._addFish = false
+                state.addMarker = {}
             }else{
                 uni.showToast({
                     title: '添加失败',
