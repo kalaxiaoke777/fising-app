@@ -49,7 +49,22 @@ const useMap = () => {
             slider: "",
             type: "",
             fishType: []
-        }
+        },
+        content: [
+            {
+                iconPath: '/static/logo.png',
+                selectedIconPath: '/static/logo.png',
+                text: '相册',
+                active: false
+            }
+        ],
+        pattern: {
+            color: '#7A7E83',
+            backgroundColor: '#fff',
+            selectedColor: '#007AFF',
+            buttonColor: '#007AFF',
+            iconColor: '#fff'
+        },
     });
 
 
@@ -195,10 +210,10 @@ const useMap = () => {
     });
     onShow(() => {
         let option = uni.getStorageSync('option');
-        ensurePublic(option.lon, option.lat, option.id)
-        uni.removeStorageSync('option');
-
-
+        if (option !== '') {
+            ensurePublic(option.lon, option.lat, option.id)
+            uni.removeStorageSync('option');
+        }
     })
     const getLocation = () => {
         uni.authorize({
@@ -391,12 +406,17 @@ const useMap = () => {
         state._addFish = false
         data.value.publicMarkers.pop()
     }
+    const trigger = () => {
+        console.log("rraer");
+        
+    }
 
     return {
         data,
         coordinates,
         isShow,
         state,
+        trigger,
         handleAddFish,
         cancelAddFish,
         regionchange,
