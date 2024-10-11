@@ -27,10 +27,8 @@
         </view>
     </view>
     <searchPoint :func="{ ensurePublic, ensurePrivate, state }" />
-    <addPoint :func="{ addFish,addFishState }" />
     <uni-fab style="bottom: 10px;" ref="fab" :pattern="state.pattern" :content="state.content" horizontal="right"
-			direction="vertical" @trigger="trigger" />
-    <Tools :func="{ toggleTraffic, toggleEnableSatellite, isShow }" />
+        direction="vertical" @trigger="trigger" />
     <view class="myCheckbox">
         <view>
             公开:
@@ -61,7 +59,7 @@ import searchPoint from "@/components/search/index.vue";
 import Tools from "@/components/tools/index.vue";
 import useMap from "../../hooks/useMap"
 
-const { data, coordinates, isShow, state,trigger,handleAddFish,cancelAddFish,addFishState,addFish, regionchange, ensurePublic, ensurePrivate, getPondTypeInChinese, onChangePublic, onChangePrivate, onChangeFavorite, toggleTraffic, toggleEnableSatellite, handleMarker, fishList, isFavoriteDisabled, checkedFavorite } = useMap();
+const { data, coordinates, isShow, state, trigger, handleAddFish, cancelAddFish, addFishState, addFish, regionchange, ensurePublic, ensurePrivate, getPondTypeInChinese, onChangePublic, onChangePrivate, onChangeFavorite, toggleTraffic, toggleEnableSatellite, handleMarker, fishList, isFavoriteDisabled, checkedFavorite } = useMap();
 </script>
 
 <style lang="scss" scoped>
@@ -80,7 +78,7 @@ $max-width: 400px; // 最大宽度
 .uni-fab--rightBottom {
     bottom: 10px;
 }
-    
+
 .myCheckbox {
     position: fixed;
     display: flex;
@@ -108,7 +106,8 @@ $max-width: 400px; // 最大宽度
     padding: 5px;
     border-radius: 2px solid rgba(230, 230, 9, 0.85);
     background-color: rgba(247, 186, 142, 0.8);
-    .btn{
+
+    .btn {
         font-size: 12px;
         // width: 50px;
         // height: 25px;

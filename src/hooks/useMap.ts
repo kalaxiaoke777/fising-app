@@ -1,10 +1,10 @@
 // useMap.ts
-import { ref, reactive, onMounted, onBeforeMount,onBeforeUnmount } from 'vue';
+import { ref, reactive, onMounted, onBeforeMount, onBeforeUnmount } from 'vue';
 import { useRegisterStore } from '../stores/index';
 import { useCityStore } from "@/stores";
 import ApiService from "@/utils/request";
 import config from "../../config";
-import {getOpenid, createUUID} from "@/utils/tools";
+import { getOpenid, createUUID } from "@/utils/tools";
 import { onShow } from "@dcloudio/uni-app";
 const { getFish, searchFish, addFishURL } = config;
 const registerStore = useRegisterStore();
@@ -29,7 +29,7 @@ const useMap = () => {
 
     const coordinates = ref([0, 0]);
     const isShow = ref({
-        isOverlooking: false,
+        isOverlooking: true,
         isTraffic: false,
         isEnableSatellite: false
     });
@@ -38,9 +38,9 @@ const useMap = () => {
         checkedPublic: true,
         checkedPrivate: false,
         checkedFavorite: false,
-        _addFish:false,
+        _addFish: false,
         onloadLocation: [0, 0],
-        addMarker:{},
+        addMarker: {},
         fishState: {
             name: '',
             number: '',
@@ -52,11 +52,26 @@ const useMap = () => {
         },
         content: [
             {
-                iconPath: '/static/logo.png',
-                selectedIconPath: '/static/logo.png',
-                text: '相册',
+                iconPath: '/static/tool/RS.png',
+                selectedIconPath: '/static/tool/_RS.png',
+                text: '卫星影像',
+                value: 'RS',
                 active: false
-            }
+            },
+            {
+                iconPath: '/static/tool/TR.png',
+                selectedIconPath: '/static/tool/_TR.png',
+                text: '交通路况',
+                value: 'TR',
+                active: false
+            },
+            {
+                iconPath: '/static/tool/FS.png',
+                selectedIconPath: '/static/tool/FS.png',
+                text: '添加钓点',
+                value: 'FS',
+                active: false
+            },
         ],
         pattern: {
             color: '#7A7E83',
@@ -70,7 +85,7 @@ const useMap = () => {
 
 
     const transformData = (locations: any) => {
-        return locations.map((location: { pond_id: any; latitude: any; longitude: any; is_public: any; name: any; description: any; rating: any; price: any; pond_type: any; phone_number: any; opening_time: any; closing_time: any; fish_species: any; is_favorite: any,uuid:string }) => ({
+        return locations.map((location: { pond_id: any; latitude: any; longitude: any; is_public: any; name: any; description: any; rating: any; price: any; pond_type: any; phone_number: any; opening_time: any; closing_time: any; fish_species: any; is_favorite: any, uuid: string }) => ({
             id: location.pond_id,
             uuid: location.uuid,
             latitude: location.latitude,
@@ -314,8 +329,8 @@ const useMap = () => {
                 let targetItem: any = data.value.publicMarkers.find((item: any) => item.id == state.addMarker.id);
                 targetItem.longitude = e.target.centerLocation.longitude
                 targetItem.latitude = e.target.centerLocation.latitude;
-                state.addMarker.longitude = e.target.centerLocation.longitude           
-                state.addMarker.latitude = e.target.centerLocation.latitude           
+                state.addMarker.longitude = e.target.centerLocation.longitude
+                state.addMarker.latitude = e.target.centerLocation.latitude
             }
             coordinates.value = [e.target.centerLocation.longitude, e.target.centerLocation.latitude];
         }
@@ -327,14 +342,14 @@ const useMap = () => {
     }
     const addFish = (_data: any) => {
         var uuid = createUUID();
-        
+
         const maps = uni.createMapContext('map', this)
 
         const markers =
         {
             id: uuid,
             uuid: uuid,
-            user_id:'',
+            user_id: '',
             latitude: coordinates.value[1],
             longitude: coordinates.value[0],
             iconPath: _data.type === "public" ? "../../static/fishing/public.png" : "../../static/fishing/private.png",
@@ -358,57 +373,72 @@ const useMap = () => {
             },
         }
         state.addMarker = markers
-        console.log(343,state.addMarker);
+        console.log(343, state.addMarker);
         state._addFish = true
 
         data.value.publicMarkers.push(markers)
     }
     const handleAddFish = async () => {
-        const openid:string = getOpenid()
-        let fish:any = state.addMarker
+        const openid: string = getOpenid()
+        let fish: any = state.addMarker
         if (!fish.is_public) {
             fish.user_id = openid
         }
         fish.location = {
             "type": "Point",
-            "coordinates": [fish.longitude, fish.latitude]           
+            "coordinates": [fish.longitude, fish.latitude]
         }
-        fish.fish_species = [...new Set(fish.fish_species.map((item:any) => item.value))];
+        fish.fish_species = [...new Set(fish.fish_species.map((item: any) => item.value))];
         await ApiService.post(addFishURL, fish)
-        .then((response: any) => {
-            const locations = response.data;
-            if (response.code === 200) {
+            .then((response: any) => {
+                const locations = response.data;
+                if (response.code === 200) {
+                    uni.showToast({
+                        title: '添加成功',
+                        icon: 'success'
+                    });
+                    state._addFish = false
+                    state.addMarker = {}
+                } else {
+                    uni.showToast({
+                        title: '添加失败',
+                        icon: 'none'
+                    });
+                    state._addFish = false
+                }
+
+            })
+            .catch(error => {
                 uni.showToast({
-                    title: '添加成功',
-                    icon:'success'
-                });
-                state._addFish = false
-                state.addMarker = {}
-            }else{
-                uni.showToast({
-                    title: '添加失败',
+                    title: error,
                     icon: 'none'
                 });
                 state._addFish = false
-            }
-
-        })
-        .catch(error => {
-            uni.showToast({
-                title: error,
-                icon: 'none'
             });
-            state._addFish = false
-        });
-        
+
     }
     const cancelAddFish = () => {
         state._addFish = false
         data.value.publicMarkers.pop()
     }
-    const trigger = () => {
-        console.log("rraer");
-        
+    const trigger = (e: any) => {
+        state.content[e.index].active = !e.item.active
+        switch (state.content[e.index].value) {
+            case "RS":
+                toggleEnableSatellite()
+                break;
+            case "TR":
+                toggleTraffic()
+                break;
+            case "FS":
+                uni.navigateTo({
+                    url: '/pages/fish/addFish'
+                })
+                break;
+            default:
+                break;
+        }
+        console.log(state.content[e.index].active);
     }
 
     return {
