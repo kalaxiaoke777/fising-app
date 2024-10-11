@@ -28,6 +28,12 @@
 			}
 		},
 		{
+			"path": "pages/my/index",
+			"style": {
+				"navigationBarTitleText": "设置"
+			}
+		},
+		{
 			"path": "pages/login/login",
 			"style": {
 				"navigationBarTitleText": "登录"

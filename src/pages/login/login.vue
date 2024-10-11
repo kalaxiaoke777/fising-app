@@ -33,8 +33,8 @@ const clearToken = () => {
 };
 const registerStore = useRegisterStore();
 
-const updateUserInfo: Function = (openId: string) => {
-    registerStore.setCityName(openId);
+const updateUserInfo: Function = (openId: string,userName: string,phoneNumber: string) => {
+    registerStore.setCityName(openId,userName,phoneNumber);
 }
 const checked = ref(false)
 const onChange: Function = () => {
@@ -46,16 +46,16 @@ const login = (url: string, code: string) => {
     ApiService.get(url, { code: code })
         .then((response: any) => {
             if (response.code === 50001) {
-                console.log(response.openid);
+                console.log(49,response);
                 
-                updateUserInfo(response.openid)
+                updateUserInfo(response.openid,response.userName,response.phoneNumber)
                 uni.navigateTo({
                     url: '/pages/login/register'
                 })
             } else {
                 // 判断是否存在用户，如果存在则返回信息，持久化
                 token.value = response.token
-                updateUserInfo(response.openid)
+                updateUserInfo(response.openid,response.userName,response.phoneNumber)
                 updateToken()
                 uni.switchTab({
                     url: '/pages/my/my'

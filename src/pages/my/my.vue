@@ -5,7 +5,7 @@
                 <cover-image class="auth_img" :src="image_url">
                 </cover-image>
                 <view>
-                    欢迎
+                    欢迎! {{state.username}}
                 </view>
             </view>
             <view class="flex-item flex-item-V icenter">
@@ -27,10 +27,16 @@
 import { onShow } from '@dcloudio/uni-app';
 import { onBeforeMount } from 'vue';
 import { onMounted, ref } from 'vue';
-import config from '../../../config'
+import { reactive } from 'vue';
+import config from "@/../config";
 const { API_BASE_URL } = config
 const image_url = ref(`https://img1.baidu.com/it/u=2875963390,1058465864&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=800`);
 const isLogin = ref(false)
+
+const state = reactive({
+    username:'',
+    phonenumber:''
+})
 const handleLogin = () => {
     // 跳转到授权登录页面
     uni.navigateTo({
@@ -38,12 +44,11 @@ const handleLogin = () => {
     });
 }
 const hanldeSet = () => {
-
+    uni.navigateTo({ url: '/pages/my/index' });
 }
 const getToken = () => {
     // 获取存储的用户信息
     const userStorage = uni.getStorageSync('register');
-
     // 处理存储项不存在或无法解析的情况
     let userToken;
     try {
@@ -54,7 +59,9 @@ const getToken = () => {
     }
 
     // 检查 token 是否存在
-    if (userToken && userToken.token) {
+    if (userToken && userToken.openid) {
+        state.username = userToken.username
+        state.phonenumber = userToken.phonenumber
         isLogin.value = false; // 已登录
     } else {
         isLogin.value = true; // 未登录
