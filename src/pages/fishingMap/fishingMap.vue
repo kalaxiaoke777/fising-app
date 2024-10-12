@@ -54,9 +54,7 @@
 </template>
 
 <script lang="ts" setup>
-import addPoint from "@/components/addPoint/index.vue";
 import searchPoint from "@/components/search/index.vue";
-import Tools from "@/components/tools/index.vue";
 import useMap from "../../hooks/useMap"
 
 const { data, coordinates, isShow, state, trigger, handleAddFish, cancelAddFish, addFishState, addFish, regionchange, ensurePublic, ensurePrivate, getPondTypeInChinese, onChangePublic, onChangePrivate, onChangeFavorite, toggleTraffic, toggleEnableSatellite, handleMarker, fishList, isFavoriteDisabled, checkedFavorite } = useMap();

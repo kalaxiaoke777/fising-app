@@ -6,7 +6,7 @@
 
 <script lang="ts" setup>
 const handlelAdd = () => {
-  
+
   uni.navigateTo({
     url: '/pages/fish/addFish'
   })

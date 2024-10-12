@@ -5,7 +5,7 @@ import { useCityStore } from "@/stores";
 import ApiService from "@/utils/request";
 import config from "../../config";
 import { getOpenid, createUUID } from "@/utils/tools";
-import { onShow } from "@dcloudio/uni-app";
+import { onShow, onLoad, onUnload } from "@dcloudio/uni-app";
 const { getFish, searchFish, addFishURL } = config;
 const registerStore = useRegisterStore();
 
@@ -260,6 +260,7 @@ const useMap = () => {
             }
         });
     };
+
     onBeforeMount(() => {
         const cityStore = useCityStore();
         cityStore.setCityName("成都");
@@ -270,6 +271,13 @@ const useMap = () => {
         });
 
     });
+    onLoad(() => {
+        getLocation();
+        const intervalId = setInterval(getLocation, 120000); // 60000ms = 60s
+        onUnload(() => {
+            clearInterval(intervalId);
+        });
+    })
 
     const fishList = (fish: string[]): string => {
         return fish.join(', ');
