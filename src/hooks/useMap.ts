@@ -5,7 +5,7 @@ import { useCityStore } from "@/stores";
 import ApiService from "@/utils/request";
 import config from "../../config";
 import { getOpenid, createUUID } from "@/utils/tools";
-import { onShow, onLoad, onUnload } from "@dcloudio/uni-app";
+import { onShow, onLoad, onUnload, onReady } from "@dcloudio/uni-app";
 const { getFish, searchFish, addFishURL } = config;
 const registerStore = useRegisterStore();
 
@@ -80,6 +80,7 @@ const useMap = () => {
             buttonColor: '#007AFF',
             iconColor: '#fff'
         },
+        mapContext:null as any
     });
 
 
@@ -230,17 +231,21 @@ const useMap = () => {
             uni.removeStorageSync('option');
         }
     })
-    const getLocation = () => {
+    const getLocation = (isFirst:boolean) => {
         uni.authorize({
             scope: 'scope.userLocation',
             success() {
                 uni.getLocation({
                     type: 'wgs84',
                     success: (res) => {
-                        coordinates.value[1] = res.latitude;
-                        coordinates.value[0] = res.longitude;
+                        if (isFirst) {
+                            coordinates.value[1] = res.latitude;
+                            coordinates.value[0] = res.longitude;  
+                            data.value.scale = 15;                          
+                        }
+
                         state.onloadLocation = [res.longitude, res.latitude];
-                        data.value.scale = 15;
+
                     },
                     fail: () => {
                         coordinates.value = [104.0431035344202, 30.642415269320068];
@@ -264,16 +269,11 @@ const useMap = () => {
     onBeforeMount(() => {
         const cityStore = useCityStore();
         cityStore.setCityName("成都");
-        getLocation();
-        const intervalId = setInterval(getLocation, 120000); // 60000ms = 60s
-        onBeforeUnmount(() => {
-            clearInterval(intervalId);
-        });
 
     });
     onLoad(() => {
-        getLocation();
-        const intervalId = setInterval(getLocation, 120000); // 60000ms = 60s
+        getLocation(true)
+        const intervalId = setInterval(()=>getLocation(false), 120000)
         onUnload(() => {
             clearInterval(intervalId);
         });
@@ -448,12 +448,31 @@ const useMap = () => {
         }
         console.log(state.content[e.index].active);
     }
-
+    const homing =() =>{
+        data.value.scale = 14
+        coordinates.value = state.onloadLocation
+    }
+    onReady(()=>{
+        state.mapContext = uni.createMapContext("map", this);
+        const _intervalId = setInterval(intervalFn, 1000); // 60000ms = 60s
+        onBeforeUnmount(()=>{
+            clearInterval(_intervalId);
+        })
+    }) 
+    const intervalFn = () => {
+        state.mapContext.getScale({
+            success:(res:any) => {
+                data.value.scale = res.scale
+                
+            }
+        })
+    }
     return {
         data,
         coordinates,
         isShow,
         state,
+        homing,
         trigger,
         handleAddFish,
         cancelAddFish,

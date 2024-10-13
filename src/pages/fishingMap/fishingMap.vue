@@ -26,6 +26,8 @@
             </view>
         </view>
     </view>
+    <view class="location" @click="homing">
+    </view>
     <searchPoint :func="{ ensurePublic, ensurePrivate, state }" />
     <uni-fab style="bottom: 10px;" ref="fab" :pattern="state.pattern" :content="state.content" horizontal="right"
         direction="vertical" @trigger="trigger" />
@@ -42,7 +44,7 @@
             :checked="state.checkedPrivate" @click="onChangePrivate"></checkbox>
         <view>
             收藏:
-        </view>
+        </view> 
         <checkbox borderColor="#a1d66a" color="yellow" style="transform:scale(0.9)" :disabled="isFavoriteDisabled()"
             class="custom-checkbox" :checked="checkedFavorite()" @click="onChangeFavorite"></checkbox>
     </view>
@@ -57,7 +59,7 @@
 import searchPoint from "@/components/search/index.vue";
 import useMap from "../../hooks/useMap"
 
-const { data, coordinates, isShow, state, trigger, handleAddFish, cancelAddFish, addFishState, addFish, regionchange, ensurePublic, ensurePrivate, getPondTypeInChinese, onChangePublic, onChangePrivate, onChangeFavorite, toggleTraffic, toggleEnableSatellite, handleMarker, fishList, isFavoriteDisabled, checkedFavorite } = useMap();
+const { data, coordinates, isShow, state, homing, trigger, handleAddFish, cancelAddFish, addFishState, addFish, regionchange, ensurePublic, ensurePrivate, getPondTypeInChinese, onChangePublic, onChangePrivate, onChangeFavorite, toggleTraffic, toggleEnableSatellite, handleMarker, fishList, isFavoriteDisabled, checkedFavorite } = useMap();
 </script>
 
 <style lang="scss" scoped>
@@ -75,6 +77,18 @@ $max-width: 400px; // 最大宽度
 
 .uni-fab--rightBottom {
     bottom: 10px;
+}
+.location{
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-sizing: border-box;
+    background-image: url('@/static/tool/location.png');
+    background-size: cover;
 }
 
 .myCheckbox {
