@@ -80,7 +80,7 @@ const useMap = () => {
             buttonColor: '#007AFF',
             iconColor: '#fff'
         },
-        mapContext:null as any
+        mapContext: null as any
     });
 
 
@@ -231,7 +231,7 @@ const useMap = () => {
             uni.removeStorageSync('option');
         }
     })
-    const getLocation = (isFirst:boolean) => {
+    const getLocation = (isFirst: boolean) => {
         uni.authorize({
             scope: 'scope.userLocation',
             success() {
@@ -240,8 +240,8 @@ const useMap = () => {
                     success: (res) => {
                         if (isFirst) {
                             coordinates.value[1] = res.latitude;
-                            coordinates.value[0] = res.longitude;  
-                            data.value.scale = 15;                          
+                            coordinates.value[0] = res.longitude;
+                            data.value.scale = 15;
                         }
 
                         state.onloadLocation = [res.longitude, res.latitude];
@@ -273,7 +273,7 @@ const useMap = () => {
     });
     onLoad(() => {
         getLocation(true)
-        const intervalId = setInterval(()=>getLocation(false), 120000)
+        const intervalId = setInterval(() => getLocation(false), 120000)
         onUnload(() => {
             clearInterval(intervalId);
         });
@@ -448,22 +448,22 @@ const useMap = () => {
         }
         console.log(state.content[e.index].active);
     }
-    const homing =() =>{
+    const homing = () => {
         data.value.scale = 14
         coordinates.value = state.onloadLocation
     }
-    onReady(()=>{
+    onReady(() => {
         state.mapContext = uni.createMapContext("map", this);
         const _intervalId = setInterval(intervalFn, 1000); // 60000ms = 60s
-        onBeforeUnmount(()=>{
+        onBeforeUnmount(() => {
             clearInterval(_intervalId);
         })
-    }) 
+    })
     const intervalFn = () => {
         state.mapContext.getScale({
-            success:(res:any) => {
+            success: (res: any) => {
                 data.value.scale = res.scale
-                
+
             }
         })
     }
