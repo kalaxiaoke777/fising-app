@@ -32,6 +32,7 @@
                             <view class="cover-content">
                                 <text class="uni-subtitle uni-white">{{item.name}}</text>
                             </view>
+                            <text class="uni-subtitle uni-white distance">距离您：{{item.distance}}km</text>
                         </view>
                     </template>
                     <uni-list>
@@ -66,11 +67,14 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, onUnmounted,reactive } from "vue";
-import { useCityStore } from "@/stores";
+import { useCityStore,useLocationStore } from "@/stores";
 import config from "../../../config"
 const {getFishList, API_BASE_URL} = config
 import ApiService from "../../utils/request";
+import {Sorting} from "@/utils/sort";
 const cityStore = useCityStore();
+const locationStore = useLocationStore();
+const sort = new Sorting();
 
 
 const actionsClick = (e:any) =>{
@@ -91,8 +95,8 @@ const state = reactive({
     isRefresher: false,
     refresherEnabled:true
 })
-const menuList = ref(['离你最近', '热度最高', '价格最低', '只看私人', '只看收藏']);
-const selectedMenu = ref('离你最近');
+const menuList = ref(['常规','离你最近', '热度最高', '价格最低', '只看私人', '只看收藏']);
+const selectedMenu = ref('常规');
 const items = ref([]);
 const loading = ref(false);
 const hasMore = ref(true);
@@ -102,6 +106,7 @@ const page = ref(1); // 当前的页码
 const refresherrefresh = (e:any) =>{
     setTimeout(() => {
         state.isRefresher = false;
+        selectedMenu.value = "常规"
     }, 1000);
     
 }
@@ -109,21 +114,51 @@ const refresherpulling = (e:any) =>{
     state.isRefresher = true;
     
 }
+const distance = () =>{
+    items.value = sort.distance(items.value, 'low');
+}
+const rate = () =>{
+    items.value = sort.rate(items.value, 'tall');
+}
+const price = () =>{
+    items.value = sort.price(items.value, 'low');
+}
 const onChange = (e: any) => {
     selectedMenu.value = menuList.value[e.detail.value];
-    resetData(); // 重置数据
+    switch (selectedMenu.value) {
+        case '离你最近':
+            distance()
+            break;
+        case '热度最高':
+            rate()
+            break;
+        case '价格最低':
+            price()
+            break;
+        case '只看私人':
+            
+            break;
+        case '只看收藏':
+            
+            break;
+    
+        default:
+            break;
+    }
+    
 }
 
 const loadMoreData = async () => {
     if (loading.value || !hasMore.value) return; // 防止重复请求
-
+    
+    
     loading.value = true;
-
+    const onloadLocation = [locationStore.longitude,locationStore.latitude]
     try {
-        await ApiService.get(getFishList, { "isPublic": 1 })
+        await ApiService.get(getFishList, { "isPublic": 1,onloadLocation })
             .then((response: any) => {
                 if (response) {
-                    console.log(response);
+                    console.log(129,response);
                     items.value = response.results
                 }
                 else {
@@ -205,6 +240,14 @@ onMounted(() => {
     flex: 1;
     flex-direction: row;
     position: relative;
+    .distance{
+        position: absolute;
+        top: 5px;
+        right: 3px;
+        color: #fff;
+        font-size: 12px;
+        background-color: rgba($color: #000000, $alpha: 0.4);
+    }
     .cover-image {
         flex: 1;
         background-size: cover;

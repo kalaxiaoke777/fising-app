@@ -1,7 +1,7 @@
 // useMap.ts
 import { ref, reactive, onMounted, onBeforeMount, onBeforeUnmount } from 'vue';
 import { useRegisterStore } from '../stores/index';
-import { useCityStore } from "@/stores";
+import { useCityStore,useLocationStore } from "@/stores";
 import ApiService from "@/utils/request";
 import config from "../../config";
 import { getOpenid, createUUID } from "@/utils/tools";
@@ -243,13 +243,13 @@ const useMap = () => {
                             coordinates.value[0] = res.longitude;
                             data.value.scale = 15;
                         }
-
                         state.onloadLocation = [res.longitude, res.latitude];
-
+                        useLocationStore().setLocationName(res.longitude, res.latitude)
                     },
                     fail: () => {
                         coordinates.value = [104.0431035344202, 30.642415269320068];
                         state.onloadLocation = [104.0431035344202, 30.642415269320068];
+                        useLocationStore().setLocationName(104.0431035344202, 30.642415269320068)
                         uni.showToast({
                             title: '无法获取地理位置',
                             icon: 'none'

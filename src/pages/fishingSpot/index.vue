@@ -45,7 +45,7 @@ import ApiService from "@/utils/request";
 import config from "../../../config";
 const { getFishSingle } = config;
 const state = reactive({
-    data: {},
+    data: {} as any,
     fav: false
 })
 const favClick = () => {
@@ -69,8 +69,8 @@ onLoad((options: any) => {
 // 这里可以定义一些数据和方法
 const buyNow = () => {
     uni.openLocation({
-        latitude: 30.567138471438266,
-        longitude: 104.08220290022344,
+        latitude: state.data.latitude,
+        longitude: state.data.longitude,
         scale: 18,
     })
 };
